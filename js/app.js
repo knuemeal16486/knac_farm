@@ -78,6 +78,14 @@
 
     $("#map-link").href =
       "https://map.naver.com/v5/search/" + encodeURIComponent(FARM.mapQuery);
+
+    const mapEl = $("#visit-map");
+    if (mapEl) {
+      const q = encodeURIComponent(FARM.mapQuery || FARM.address);
+      mapEl.innerHTML =
+        `<iframe title="${FARM.name} 위치" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${q}&z=15&hl=ko&output=embed"></iframe>`;
+      mapEl.removeAttribute("aria-hidden");
+    }
     $("#ship-note").textContent = CONFIG.shipping;
     $("#bank-acc").textContent = CONFIG.bankAccount;
 
