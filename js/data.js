@@ -90,11 +90,16 @@ const VALUES = [
    image : assets/grow1.jpg 처럼 사진 경로 (없으면 일러스트 자동 표시)
    brix  : (선택) 그 시점 당도. 없으면 표시 안 함 */
 const GROWTH = [
-  { date: "4월", title: "새순이 돋다", desc: "겨우내 잠든 가지에서 연둣빛 새순이 올라옵니다.", image: "assets/grow1.jpg" },
-  { date: "5~6월", title: "개화와 착과", desc: "꽃이 피고 작은 알이 맺히기 시작합니다.", image: "assets/grow2.jpg" },
-  { date: "7월", title: "알솎기", desc: "한 송이의 모양을 위해 알을 손으로 솎아냅니다.", image: "assets/grow3.jpg" },
-  { date: "8월", title: "착색과 비대", desc: "알이 굵어지고 단맛이 차오릅니다.", image: "assets/grow4.jpg", brix: 14 },
-  { date: "10월", title: "수확", desc: "가장 단 날을 골라 한 송이씩 수확합니다.", image: "assets/grow5.jpg", brix: 18 },
+  { date: "4월", title: "새순이 돋다", desc: "겨우내 잠든 가지에서 연둣빛 새순이 올라옵니다.", image: "assets/grow1.jpg",
+    farmerNote: "겨울을 잘 버텨준 가지에서 새순이 올라오는 날은 매년 설렙니다." },
+  { date: "5~6월", title: "개화와 착과", desc: "꽃이 피고 작은 알이 맺히기 시작합니다.", image: "assets/grow2.jpg",
+    farmerNote: "이 시기 날씨가 달콤함의 절반을 결정합니다. 비가 안 오길 매일 기도해요." },
+  { date: "7월", title: "알솎기", desc: "한 송이의 모양을 위해 알을 손으로 솎아냅니다.", image: "assets/grow3.jpg",
+    farmerNote: "한 송이에 40~50알만 남기고 나머지는 손으로 솎아냅니다. 허리가 뻐근해도 이 작업이 달콤함을 만듭니다." },
+  { date: "8월", title: "착색과 비대", desc: "알이 굵어지고 단맛이 차오릅니다.", image: "assets/grow4.jpg", brix: 14,
+    farmerNote: "밤에 산에서 내려오는 찬 공기가 낮의 열기와 만나면서 당도가 오릅니다. 일교차가 클수록 더 답니다." },
+  { date: "10월", title: "수확", desc: "가장 단 날을 골라 한 송이씩 수확합니다.", image: "assets/grow5.jpg", brix: 18,
+    farmerNote: "당도계로 재고, 색을 보고, 손으로 만져보고. 준비된 송이만 그 날 바로 포장해 보냅니다." },
 ];
 
 /* ---------- 4. 주문/연락 설정 ---------- */
