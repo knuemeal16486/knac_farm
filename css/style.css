@@ -429,3 +429,55 @@ section{scroll-margin-top:64px}
 
 /* 푸터 사업자 정보 */
 .biz-info{margin-top:1.1rem;font-size:.74rem;line-height:1.7;opacity:.55;max-width:680px;margin-inline:auto;padding-inline:1rem}
+
+/* ============================================================
+   고급화: 인트로 / 히어로 연출 / 통계 띠 / 판매 전 패널 / 진행바
+   ============================================================ */
+::selection{background:var(--sage);color:var(--ink)}
+html{scrollbar-width:thin}
+
+/* 인트로 베일 */
+.intro{position:fixed;inset:0;z-index:100;background:var(--paper);
+  display:flex;align-items:center;justify-content:center;transition:opacity .7s ease,transform .7s ease}
+.intro.gone{opacity:0;transform:translateY(-14px);pointer-events:none}
+.intro-mark{display:flex;flex-direction:column;align-items:center;gap:.9rem;color:var(--sage-d);animation:introPop .7s ease both}
+.intro-name{font-family:var(--serif);font-size:1.4rem;color:var(--ink);letter-spacing:.02em}
+@keyframes introPop{0%{opacity:0;transform:scale(.86)}100%{opacity:1;transform:scale(1)}}
+
+/* 히어로 떠다니는 포도 + 등장 연출 */
+.hero-decor{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.hero-decor .grape{position:absolute;border-radius:50%;filter:blur(3px);
+  background:radial-gradient(circle at 35% 30%, rgba(143,166,106,.5), rgba(143,166,106,.12));animation:floaty 7s ease-in-out infinite}
+.grape.g1{width:130px;height:130px;top:10%;right:7%}
+.grape.g2{width:72px;height:72px;top:58%;right:22%;animation-delay:1.3s;opacity:.7}
+.grape.g3{width:96px;height:96px;bottom:8%;right:40%;animation-delay:2.5s;opacity:.45}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+.hero-inner>*{animation:heroUp .8s ease both}
+.hero-inner>*:nth-child(1){animation-delay:.55s}
+.hero-inner>*:nth-child(2){animation-delay:.66s}
+.hero-inner>*:nth-child(3){animation-delay:.77s}
+.hero-inner>*:nth-child(4){animation-delay:.88s}
+.hero-proof{animation:heroUp .9s ease .9s both}
+@keyframes heroUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* 통계 띠 */
+.stats{background:var(--ink);color:var(--paper)}
+.stats-inner{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);
+  padding:clamp(1.8rem,4vw,2.6rem) clamp(1.1rem,4vw,2.8rem)}
+.stat{text-align:center;padding:.4rem;border-right:1px solid rgba(244,239,228,.16)}
+.stat:last-child{border-right:none}
+.stat-num{display:block;font-family:var(--serif);font-weight:700;color:#c7d98f;
+  font-size:clamp(1.8rem,5vw,2.8rem);line-height:1}
+.stat-label{font-size:.74rem;opacity:.72;letter-spacing:.05em;margin-top:.45rem}
+
+/* 판매 전(수확 전) 패널 */
+.preharvest{border:1px solid var(--line);border-radius:var(--rad);background:var(--cream);
+  padding:1.7rem 1.5rem;text-align:center;margin-top:.6rem}
+.ph-ic{color:var(--sage-d);display:inline-flex;margin-bottom:.5rem}
+.ph-title{font-family:var(--serif);font-size:1.25rem;font-weight:700}
+.ph-desc{font-size:.92rem;color:var(--ink-soft);margin:.5rem 0 1.2rem;line-height:1.7}
+.ph-actions{display:flex;flex-direction:column;gap:.6rem}
+
+/* 성장 일지 진행바 */
+.growth-progress{max-width:340px;margin:0 auto 1.3rem;height:3px;background:var(--line);border-radius:999px;overflow:hidden}
+#growth-bar{display:block;height:100%;width:20%;background:var(--sage-d);border-radius:999px;transition:width .15s linear}

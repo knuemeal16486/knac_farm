@@ -9,6 +9,7 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const won = (n) => n.toLocaleString("ko-KR") + "원";
   const digits = (s) => (s || "").replace(/[^0-9]/g, "");
+  const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* 장바구니 영속화 (localStorage 불가 환경에서도 동작) */
   const store = {
@@ -114,6 +115,32 @@
       </article>`).join("");
   }
 
+  /* ---------- 통계 띠 (카운트업) ---------- */
+  function renderStats() {
+    const box = $("#stats-inner");
+    if (!box) return;
+    const stats = [
+      { to: FARM.elevation, suffix: "m", label: "밭 해발고도" },
+      { to: FARM.brixMax, suffix: " Brix", label: "최고 당도" },
+      { to: FARMER.years, suffix: "년", label: "농부의 손길" },
+    ].filter((s) => s.to);
+    box.innerHTML = stats.map((s) =>
+      `<div class="stat"><span class="stat-num" data-to="${s.to}" data-suffix="${s.suffix}">0</span><span class="stat-label">${s.label}</span></div>`
+    ).join("");
+  }
+  function animateCount(el) {
+    const to = Number(el.dataset.to) || 0;
+    const suf = el.dataset.suffix || "";
+    if (reduceMotion() || !to) { el.textContent = to + suf; return; }
+    const dur = 1200, t0 = performance.now();
+    const tick = (t) => {
+      const p = Math.min((t - t0) / dur, 1);
+      el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * to) + suf;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
   /* ---------- 2. 제품 렌더링 ---------- */
   const grapeSVG = `<svg viewBox="0 0 40 48" width="64" height="76"><g fill="currentColor">
     <circle cx="20" cy="14" r="6"/><circle cx="11" cy="22" r="6"/><circle cx="29" cy="22" r="6"/>
@@ -143,6 +170,7 @@
         <p class="pdp-brix">${PRODUCT.brixNote || ""}</p>
         <p class="pdp-desc">${PRODUCT.desc || ""}</p>
         <div id="opt-groups"></div>
+        ${CONFIG.saleOpen ? `
         <div class="pdp-buy">
           <div class="pdp-price"><span class="pdp-price-label">합계</span><span id="pdp-price"></span></div>
           <div class="pdp-qty" role="group" aria-label="수량">
@@ -153,7 +181,16 @@
         </div>
         <button class="btn btn-primary full" id="pdp-add" ${PRODUCT.soldout ? "disabled" : ""}>
           ${PRODUCT.soldout ? "품절" : "장바구니에 담기"}
-        </button>
+        </button>` : `
+        <div class="preharvest">
+          <span class="ph-ic">${svg("leaf", 26)}</span>
+          <p class="ph-title">올해 수확은 10월이에요</p>
+          <p class="ph-desc">수확 후 판매를 시작합니다. 미리 주문·문의는 아래로 연락 주세요.</p>
+          <div class="ph-actions">
+            <a class="btn btn-primary full" href="sms:${digits(FARM.phone)}">문자로 문의하기</a>
+            <a class="btn btn-ghost full" href="tel:${digits(FARM.phone)}">전화 ${FARM.phone}</a>
+          </div>
+        </div>`}
       </div>`;
     mountImage($("#pdp-img"), PRODUCT.image, PRODUCT.name, true);
     renderOptions();
@@ -463,6 +500,54 @@
     requestAnimationFrame(tick);
   }
 
+  function setupIntro() {
+    const el = $("#intro");
+    if (!el) return;
+    if (reduceMotion()) { el.remove(); return; }
+    setTimeout(() => {
+      el.classList.add("gone");
+      setTimeout(() => el.remove(), 750);
+    }, 620);
+  }
+
+  function setupHeroParallax() {
+    if (reduceMotion()) return;
+    const bg = $("#hero-bg"), decor = $(".hero-decor");
+    addEventListener("scroll", () => {
+      const y = window.scrollY;
+      if (y > 820) return;
+      if (bg) bg.style.transform = `translateY(${y * 0.14}px)`;
+      if (decor) decor.style.transform = `translateY(${y * 0.26}px)`;
+    }, { passive: true });
+  }
+
+  function setupStats() {
+    const sec = $("#stats");
+    if (!sec) return;
+    const nums = $$(".stat-num", sec);
+    if (!("IntersectionObserver" in window)) { nums.forEach(animateCount); return; }
+    const io = new IntersectionObserver((es) => {
+      es.forEach((en) => {
+        if (!en.isIntersecting) return;
+        nums.forEach(animateCount);
+        io.disconnect();
+      });
+    }, { threshold: 0.4 });
+    io.observe(sec);
+  }
+
+  function setupGrowthProgress() {
+    const track = $("#growth-track"), bar = $("#growth-bar");
+    if (!track || !bar) return;
+    const upd = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      bar.style.width = (max > 0 ? (track.scrollLeft / max) * 100 : 0) + "%";
+    };
+    upd();
+    track.addEventListener("scroll", upd, { passive: true });
+    addEventListener("resize", upd);
+  }
+
   function setupHeader() {
     const bar = $(".topbar");
     const onScroll = () => bar.classList.toggle("scrolled", window.scrollY > 8);
@@ -574,20 +659,33 @@
   }
 
   /* ---------- 부트 ---------- */
+  // 판매 전이면 장바구니 진입점 숨기고 히어로 CTA 문구 변경
+  if (!CONFIG.saleOpen) {
+    const oc = document.getElementById("open-cart");
+    if (oc) oc.style.display = "none";
+    const hb = document.querySelector(".hero-actions .btn-primary");
+    if (hb) hb.textContent = "사전 문의하기";
+  }
+
   hydrate();
   renderTrust();
+  renderStats();
   renderValues();
   renderGrowth();
   renderPDP();
   renderCart();
   updateBadges();
   bind();
+  setupIntro();
   setupReveal();
   mountHeroBg();
   countUpBrix();
+  setupStats();
   setupHeader();
   setupScrollSpy();
   setupGrowth();
+  setupGrowthProgress();
+  setupHeroParallax();
   setupToTop();
   setupLightbox();
 })();
