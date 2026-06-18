@@ -254,6 +254,23 @@
 
   <button class="to-top" id="to-top" aria-label="맨 위로" hidden>↑</button>
 
+  <!-- 담기 전 옵션 확인 모달 -->
+  <div class="cc-modal" id="cart-confirm-modal" hidden>
+    <div class="cc-card" role="dialog" aria-modal="true" aria-labelledby="cc-title">
+      <p class="cc-eyebrow">장바구니에 담기 전 확인해주세요</p>
+      <h4 id="cc-title" class="cc-product-name">샤인머스켓 · 산지직송</h4>
+      <div class="cc-opts"></div>
+      <div class="cc-total">
+        <span>합계 (배송비 별도)</span>
+        <strong class="cc-price"></strong>
+      </div>
+      <div class="cc-actions">
+        <button class="btn btn-ghost" id="cc-cancel">취소</button>
+        <button class="btn btn-primary" id="cc-confirm">담기 확인</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 장바구니 담김 확인 모달 -->
   <div class="added-modal" id="added-modal" hidden>
     <div class="added-card" role="dialog" aria-modal="true" aria-labelledby="added-title">

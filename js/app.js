@@ -324,6 +324,38 @@
 
   function addCurrentToCart() {
     if (PRODUCT.soldout || addCartLocked) return;
+    showCartConfirm();
+  }
+
+  function showCartConfirm() {
+    const w = curWeight();
+    const bunch = w.bunches[sel.bunchIdx];
+    const box = OPTIONS.box[sel.boxIdx];
+    const wrap = OPTIONS.wrap[sel.wrapIdx];
+    const total = unitPrice() * pdpQty;
+    const modal = $("#cart-confirm-modal");
+    if (!modal) return;
+    const rows = [
+      ["무게",   w.label],
+      ["송이수", bunch],
+      ["상자",   box.label],
+      ["포장",   wrap.label],
+      ["수량",   `${pdpQty}상자`],
+    ].map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("");
+    modal.querySelector(".cc-opts").innerHTML = `<table class="cc-table">${rows}</table>`;
+    modal.querySelector(".cc-price").textContent = won(total);
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+    modal.querySelector("#cc-confirm").focus();
+  }
+
+  function closeCartConfirm() {
+    const modal = $("#cart-confirm-modal");
+    if (modal) modal.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  function doAddCurrentToCart() {
     addCartLocked = true;
     setTimeout(() => { addCartLocked = false; }, 300);
     const w = curWeight();
@@ -743,6 +775,13 @@
       else if (t.dataset.dec) setQty(t.dataset.dec, -1);
       else if (t.dataset.rm) removeItem(t.dataset.rm);
     });
+
+    // 담기 전 옵션 확인 모달
+    const cm = $("#cart-confirm-modal");
+    $("#cc-cancel").addEventListener("click", closeCartConfirm);
+    $("#cc-confirm").addEventListener("click", () => { closeCartConfirm(); doAddCurrentToCart(); });
+    cm.addEventListener("click", (e) => e.target === cm && closeCartConfirm());
+    document.addEventListener("keydown", (e) => e.key === "Escape" && !cm.hidden && closeCartConfirm());
 
     // 장바구니 담김 확인 모달
     const am = $("#added-modal");

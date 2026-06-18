@@ -585,3 +585,34 @@ html{scrollbar-width:thin}
 /* 성장 일지 카드 호버 */
 .g-card{transition:transform .2s ease,box-shadow .2s ease}
 .g-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+
+/* ============================================================
+   담기 전 옵션 확인 모달
+   ============================================================ */
+.cc-modal{
+  position:fixed;inset:0;z-index:85;background:rgba(43,51,32,.45);
+  display:flex;align-items:center;justify-content:center;padding:1.5rem;animation:fade .2s
+}
+.cc-modal[hidden]{display:none}
+.cc-card{
+  background:var(--paper-2);border-radius:var(--rad);padding:1.8rem;
+  max-width:380px;width:100%;box-shadow:var(--shadow);animation:pop .25s ease
+}
+.cc-eyebrow{font-size:.74rem;font-weight:700;letter-spacing:.16em;color:var(--sage-d);
+  text-transform:uppercase;margin-bottom:.4rem}
+.cc-product-name{font-family:var(--serif);font-size:1.25rem;margin-bottom:1.4rem}
+.cc-table{width:100%;border-collapse:collapse;margin-bottom:1.2rem}
+.cc-table th{
+  text-align:left;font-size:.8rem;color:var(--ink-soft);font-weight:600;
+  padding:.5rem 0;width:4.5em;vertical-align:top
+}
+.cc-table td{font-size:.95rem;font-weight:700;padding:.5rem 0}
+.cc-table tr+tr th,.cc-table tr+tr td{border-top:1px solid var(--line)}
+.cc-total{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.9rem 0;border-top:2px solid var(--ink);margin-bottom:1.3rem
+}
+.cc-total span{font-size:.82rem;color:var(--ink-soft);font-weight:600}
+.cc-price{font-family:var(--serif);font-size:1.75rem;font-weight:700;color:var(--ink)}
+.cc-actions{display:flex;gap:.7rem}
+.cc-actions .btn{flex:1}
