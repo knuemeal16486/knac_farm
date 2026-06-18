@@ -400,6 +400,7 @@
           <span class="g-date">${g.date}</span>
           <h3 class="g-title">${g.title}</h3>
           <p class="g-desc">${g.desc}</p>
+          ${g.farmerNote ? `<blockquote class="g-farmer-note">"${g.farmerNote}" — ${FARMER.name}</blockquote>` : ""}
         </div>
       </article>`).join("");
 
@@ -511,12 +512,28 @@
     $("#checkout-view").hidden = v !== "checkout";
     $("#done-view").hidden     = v !== "done";
     if (v === "method") setupCallAvailability();
+    if (v === "checkout") prefillCheckout();
     const stepMap = { cart: 0, method: 1, checkout: 2, done: 3 };
     const idx = stepMap[v] ?? 0;
     $$(".drawer-step").forEach((s, i) => {
       s.classList.toggle("active", i === idx);
       s.classList.toggle("done", i < idx);
     });
+  }
+
+  function prefillCheckout() {
+    const hint = $("#checkout-hint");
+    if (hint) hint.textContent = "입력하신 정보가 문자에 자동으로 채워집니다.";
+    try {
+      const saved = JSON.parse(localStorage.getItem("knac_buyer") || "null");
+      if (!saved) return;
+      const form = $("#checkout-view");
+      let filled = false;
+      if (saved.name)  { form.elements.namedItem("name").value  = saved.name;  filled = true; }
+      if (saved.phone) { form.elements.namedItem("phone").value = saved.phone; filled = true; }
+      if (saved.addr)  { form.elements.namedItem("address").value = saved.addr; filled = true; }
+      if (filled && hint) hint.textContent = "이전에 입력하신 정보를 불러왔습니다. 확인 후 주문해 주세요.";
+    } catch {}
   }
 
   /* ---------- 5. 주문 처리 ---------- */
@@ -528,15 +545,23 @@
     );
     return [
       `[${FARM.name} 주문]`,
-      `성함: ${f.get("name")}`,
+      ``,
+      `안녕하세요, ${FARMER.name} 농부님!`,
+      `아래와 같이 주문 드립니다.`,
+      ``,
+      `─────────────────`,
+      ...lines,
+      `─────────────────`,
+      `합계: ${won(itemTotal())}`,
+      `배송비: ${CONFIG.shipping}`,
+      ``,
+      `이름: ${f.get("name")}`,
       `연락처: ${f.get("phone")}`,
       `수령: ${method}`,
       method === "택배" ? `주소: ${f.get("address")}` : null,
-      f.get("memo") ? `요청: ${f.get("memo")}` : null,
-      `──────────`,
-      ...lines,
-      `상품합계: ${won(itemTotal())}`,
-      `(배송비 별도: ${CONFIG.shipping})`,
+      f.get("memo") ? `요청사항: ${f.get("memo")}` : null,
+      ``,
+      `잘 부탁드립니다. 감사합니다!`,
     ].filter(Boolean).join("\n");
   }
 
@@ -568,6 +593,15 @@
     smsA.click();
     document.body.removeChild(smsA);
 
+    // 다음 방문 시 폼 자동완성을 위해 구매자 정보 저장
+    try {
+      localStorage.setItem("knac_buyer", JSON.stringify({
+        name: fd.get("name") || "",
+        phone: fd.get("phone") || "",
+        addr: fd.get("address") || "",
+      }));
+    } catch {}
+
     // (A) 폼 엔드포인트가 있으면 이메일 자동 전송 시도
     if (CONFIG.formEndpoint) {
       try {
@@ -583,7 +617,7 @@
 
   function showDone(summary) {
     $("#order-summary").textContent = summary;
-    $("#done-desc").textContent = "문자 앱이 열렸습니다. 내용을 확인하고 전송해 주세요. 앱이 열리지 않았다면 아래 버튼을 눌러주세요.";
+    $("#done-desc").textContent = `문자 앱이 열렸습니다. 전송하시면 농부 ${FARMER.name}이 직접 확인하고 연락드리겠습니다. 앱이 열리지 않았다면 아래 버튼을 눌러주세요.`;
 
     const tel = digits(FARM.phone);
     const body = encodeURIComponent(summary);
@@ -608,8 +642,9 @@
   /* ---------- 장바구니 담김 확인 ---------- */
   function showAdded(line) {
     const am = $("#added-modal");
-    $("#added-line").textContent =
-      `${line.name} · ${line.opt.weight}/${line.opt.bunch}/${line.opt.box}/${line.opt.wrap} · ${line.qty}개`;
+    $("#added-line").innerHTML =
+      `${line.opt.weight} · ${line.opt.bunch} · ${line.opt.box} · ${line.opt.wrap} · ${line.qty}개` +
+      `<span class="added-sub">수확한 포도를 직접 선별해 보내드립니다.</span>`;
     am.hidden = false;
   }
 

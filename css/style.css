@@ -619,6 +619,31 @@ html{scrollbar-width:thin}
 .g-card{transition:transform .2s ease,box-shadow .2s ease}
 .g-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
 
+/* 성장 일지 농부 노트 */
+.g-farmer-note{
+  font-family:var(--serif);font-style:italic;font-size:.88rem;
+  color:var(--sage-d);border-left:3px solid var(--sage);
+  padding:.5rem .8rem;margin-top:.9rem;line-height:1.65;
+}
+
+/* 농부 서명 */
+.farmer-sign{
+  font-family:var(--serif);font-style:italic;color:var(--sage-d);
+  font-size:.95rem;margin-top:1rem;text-align:right;
+}
+
+/* 히어로 농부 목소리 */
+.hero-farmer-voice{
+  font-size:.9rem;color:var(--sage-d);font-weight:600;
+  margin-top:.6rem;letter-spacing:.01em;
+}
+
+/* 장바구니 담김 모달 농부 서브 문구 */
+.added-sub{
+  display:block;font-size:.8rem;color:var(--sage-d);
+  margin-top:.35rem;font-style:italic;font-family:var(--serif);
+}
+
 /* ============================================================
    담기 전 옵션 확인 모달
    ============================================================ */
