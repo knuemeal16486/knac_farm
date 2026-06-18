@@ -29,68 +29,37 @@ const FARMER = {
   photo: "assets/farmer.jpg",
 };
 
-/* ---------- 3. 제품 목록 ----------
-   id      : 고유값(영문, 중복 금지)
-   name    : 상품명
-   grade   : 등급 라벨 (가정용 / 선물용 / 특상 등)
-   weight  : 중량 표기
-   bunches : 송이 수 표기
-   brix    : 당도(Brix)
-   price   : 가격(숫자만)
-   desc    : 한 줄 설명
-   image   : assets/p1.jpg 처럼 사진 경로 (없으면 일러스트 자동 표시)
-   soldout : 품절이면 true
+/* ---------- 3. 제품 & 옵션 ----------
+   PRODUCT : 판매 상품 정보 (현재 샤인머스켓 1종)
+   OPTIONS : 손님이 고르는 옵션
+     weight : 무게. price=기본가격(원, ★실제가격으로 수정), bunches=고를 수 있는 송이수
+     box    : 상자 종류. add=추가금(원)
+     wrap   : 포장 방식. add=추가금(원)
+   최종가격 = 선택한 무게 price + 상자 add + 포장 add
 */
-const PRODUCTS = [
-  {
-    id: "home2kg",
-    name: "가정용 샤인머스켓",
-    grade: "가정용",
-    weight: "2kg",
-    bunches: "2~3송이",
-    brix: 17,
-    price: 30000,
-    desc: "온 가족이 매일 부담 없이 즐기는 실속 구성.",
-    image: "assets/p1.jpg",
-    soldout: false,
-  },
-  {
-    id: "gift2kg",
-    name: "선물용 샤인머스켓",
-    grade: "선물용",
-    weight: "2kg",
-    bunches: "2송이 · 박스 포장",
-    brix: 18,
-    price: 45000,
-    desc: "고급 선물 박스에 담아 드립니다. 명절·감사 선물용.",
-    image: "assets/p2.jpg",
-    soldout: false,
-  },
-  {
-    id: "premium5kg",
-    name: "프리미엄 특상",
-    grade: "특상",
-    weight: "5kg",
-    bunches: "5~6송이",
-    brix: 19,
-    price: 90000,
-    desc: "가장 굵고 단 알만 선별한 최상급 구성.",
-    image: "assets/p3.jpg",
-    soldout: false,
-  },
-  {
-    id: "value3kg",
-    name: "실속형 (흠과)",
-    grade: "실속",
-    weight: "3kg",
-    bunches: "랜덤 송이",
-    brix: 17,
-    price: 25000,
-    desc: "맛은 그대로, 모양만 조금 아쉬운 알뜰 구성.",
-    image: "assets/p4.jpg",
-    soldout: false,
-  },
-];
+const PRODUCT = {
+  name: "샤인머스켓",
+  grade: "산지직송",
+  desc: "소정리에서 손수확한 샤인머스켓. 원하는 구성으로 주문하세요.",
+  brixNote: "당도 17 Brix 이상",
+  image: "assets/p1.jpg",          // 없으면 일러스트 자동 표시
+  soldout: false,
+};
+
+const OPTIONS = {
+  weight: [
+    { id: "2kg", label: "2kg", price: 30000, bunches: ["2수", "3수"] },          // ★ 가격 수정
+    { id: "4kg", label: "4kg", price: 55000, bunches: ["4수", "5수", "6수"] },   // ★ 가격 수정
+  ],
+  box: [
+    { id: "normal",   label: "일반상자", add: 0 },
+    { id: "delivery", label: "택배상자", add: 0 },     // 추가금 있으면 add 값 수정
+  ],
+  wrap: [
+    { id: "basic",  label: "일반 포장",  add: 0 },
+    { id: "aircap", label: "에어캡 포장", add: 0 },     // 추가금 있으면 add 값 수정 (예: 2000)
+  ],
+};
 
 /* ---------- 3.5 신뢰 배지 (히어로 아래 3종) ---------- */
 const TRUST = [

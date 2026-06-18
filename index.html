@@ -116,14 +116,14 @@
     <div class="values-grid" id="values-grid"><!-- JS 렌더링 --></div>
   </section>
 
-  <!-- ===== 제품 ===== -->
+  <!-- ===== 제품 (옵션 선택) ===== -->
   <section class="products" id="products">
     <div class="section-head">
       <p class="eyebrow">올해의 수확</p>
-      <h2>샤인머스켓 구성</h2>
-      <p class="section-desc">주문 즉시 수확·포장하여 신선하게 보내드립니다.</p>
+      <h2>샤인머스켓 주문</h2>
+      <p class="section-desc">원하는 무게·송이·상자·포장을 골라 담으세요.</p>
     </div>
-    <div class="product-grid" id="product-grid"><!-- JS 렌더링 --></div>
+    <div class="pdp" id="pdp"><!-- JS 렌더링 --></div>
   </section>
 
   <!-- ===== 오시는 길 / 연락처 ===== -->
@@ -217,6 +217,19 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <button class="to-top" id="to-top" aria-label="맨 위로" hidden>↑</button>
+
+  <!-- 장바구니 담김 확인 모달 -->
+  <div class="added-modal" id="added-modal" hidden>
+    <div class="added-card" role="dialog" aria-modal="true" aria-labelledby="added-title">
+      <div class="added-mark" aria-hidden="true">✓</div>
+      <h4 id="added-title">장바구니에 담겼어요!</h4>
+      <p class="added-line" id="added-line"></p>
+      <div class="added-actions">
+        <button class="btn btn-ghost" id="added-continue">계속 둘러보기</button>
+        <button class="btn btn-primary" id="added-view">장바구니 보기</button>
+      </div>
+    </div>
+  </div>
 
   <div class="lightbox" id="lightbox" hidden>
     <button class="lb-close" aria-label="닫기">✕</button>

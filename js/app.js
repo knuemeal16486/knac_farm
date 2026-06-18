@@ -23,6 +23,9 @@
   };
   let mem = [];
   let cart = store.read();
+  // 구버전(상품ID 기반) 장바구니 데이터는 옵션형과 호환되지 않으므로 정리
+  if (!Array.isArray(cart)) cart = [];
+  cart = cart.filter((c) => c && typeof c.key === "string" && typeof c.price === "number" && c.opt);
 
   /* ---------- 1. 콘텐츠 바인딩 ---------- */
   const ICONS = {
@@ -103,37 +106,104 @@
     <circle cx="20" cy="29" r="6"/><circle cx="13" cy="35" r="5.5"/><circle cx="27" cy="35" r="5.5"/><circle cx="20" cy="41" r="5"/>
   </g></svg>`;
 
-  function renderProducts() {
-    const grid = $("#product-grid");
-    grid.innerHTML = PRODUCTS.map((p) => `
-      <article class="card${p.soldout ? " soldout" : ""}" data-id="${p.id}">
-        <div class="card-img">
-          <span class="grade-tag">${p.grade}</span>
+  /* ---------- 2. 제품 (옵션 선택형) ---------- */
+  let sel = { weightIdx: 0, bunchIdx: 0, boxIdx: 0, wrapIdx: 0 };
+  let pdpQty = 1;
+
+  const curWeight = () => OPTIONS.weight[sel.weightIdx];
+  const unitPrice = () =>
+    curWeight().price + OPTIONS.box[sel.boxIdx].add + OPTIONS.wrap[sel.wrapIdx].add;
+
+  function renderPDP() {
+    const pdp = $("#pdp");
+    if (!pdp) return;
+    pdp.innerHTML = `
+      <div class="pdp-media">
+        <div class="card-img" id="pdp-img">
+          <span class="grade-tag">${PRODUCT.grade}</span>
           ${grapeSVG}
         </div>
-        <div class="card-body">
-          <h3 class="card-name">${p.name}</h3>
-          <div class="card-meta">
-            <span class="chip">${p.weight}</span>
-            <span class="chip">${p.bunches}</span>
-            <span class="chip">당도 ${p.brix} Brix</span>
-          </div>
-          <p class="card-desc">${p.desc}</p>
-          <div class="card-foot">
-            <span class="card-price">${p.price.toLocaleString("ko-KR")}<small>원</small></span>
-            <button class="add-btn" data-add="${p.id}" ${p.soldout ? "disabled" : ""}>
-              ${p.soldout ? "품절" : "담기"}
-            </button>
+      </div>
+      <div class="pdp-info">
+        <h3 class="pdp-name">${PRODUCT.name}</h3>
+        <p class="pdp-brix">${PRODUCT.brixNote || ""}</p>
+        <p class="pdp-desc">${PRODUCT.desc || ""}</p>
+        <div id="opt-groups"></div>
+        <div class="pdp-buy">
+          <div class="pdp-price"><span class="pdp-price-label">합계</span><span id="pdp-price"></span></div>
+          <div class="pdp-qty" role="group" aria-label="수량">
+            <button type="button" data-pq="-1" aria-label="수량 줄이기">−</button>
+            <span id="pdp-qty">1</span>
+            <button type="button" data-pq="1" aria-label="수량 늘리기">+</button>
           </div>
         </div>
-      </article>`).join("");
-
-    // 사진 있으면 덮어쓰기 (없으면 일러스트 유지)
-    PRODUCTS.forEach((p) => {
-      const box = $(`.card[data-id="${p.id}"] .card-img`);
-      mountImage(box, p.image, p.name, true);
-    });
+        <button class="btn btn-primary full" id="pdp-add" ${PRODUCT.soldout ? "disabled" : ""}>
+          ${PRODUCT.soldout ? "품절" : "장바구니에 담기"}
+        </button>
+      </div>`;
+    mountImage($("#pdp-img"), PRODUCT.image, PRODUCT.name, true);
+    renderOptions();
+    updatePrice();
   }
+
+  function optGroup(title, grp, items, activeIdx) {
+    const pills = items.map((it, i) =>
+      `<button type="button" class="opt-pill${i === activeIdx ? " on" : ""}" data-grp="${grp}" data-i="${i}">${it}</button>`
+    ).join("");
+    return `<div class="opt-group"><span class="opt-label">${title}</span><div class="opt-pills">${pills}</div></div>`;
+  }
+
+  function renderOptions() {
+    const box = $("#opt-groups");
+    if (!box) return;
+    box.innerHTML =
+      optGroup("무게", "weight", OPTIONS.weight.map((w) => w.label), sel.weightIdx) +
+      optGroup("송이 수", "bunch", curWeight().bunches, sel.bunchIdx) +
+      optGroup("상자", "box", OPTIONS.box.map((b) => b.label), sel.boxIdx) +
+      optGroup("포장", "wrap", OPTIONS.wrap.map((w) => w.label), sel.wrapIdx);
+  }
+
+  function selectOption(grp, i) {
+    if (grp === "weight") { sel.weightIdx = i; sel.bunchIdx = 0; }
+    else if (grp === "bunch") sel.bunchIdx = i;
+    else if (grp === "box") sel.boxIdx = i;
+    else if (grp === "wrap") sel.wrapIdx = i;
+    renderOptions();
+    updatePrice();
+  }
+
+  function setPdpQty(d) {
+    pdpQty = Math.max(1, pdpQty + d);
+    $("#pdp-qty").textContent = pdpQty;
+    updatePrice();
+  }
+
+  function updatePrice() {
+    const el = $("#pdp-price");
+    if (el) el.textContent = won(unitPrice() * pdpQty);
+  }
+
+  function addCurrentToCart() {
+    if (PRODUCT.soldout) return;
+    const w = curWeight();
+    const bunch = w.bunches[sel.bunchIdx];
+    const box = OPTIONS.box[sel.boxIdx];
+    const wrap = OPTIONS.wrap[sel.wrapIdx];
+    const opt = { weight: w.label, bunch, box: box.label, wrap: wrap.label };
+    const line = {
+      key: [w.id, bunch, box.id, wrap.id].join("|"),
+      name: PRODUCT.name,
+      opt,
+      price: unitPrice(),
+      qty: pdpQty,
+    };
+    addLine(line);
+    showAdded(line);
+    pdpQty = 1;
+    $("#pdp-qty").textContent = 1;
+    updatePrice();
+  }
+
 
   /* ---------- 성장 일지 렌더 ---------- */
   function renderGrowth() {
@@ -166,26 +236,24 @@
     });
   }
 
-  /* ---------- 3. 장바구니 ---------- */
-  const find = (id) => PRODUCTS.find((p) => p.id === id);
-  const itemTotal = () => cart.reduce((s, c) => s + (find(c.id)?.price || 0) * c.qty, 0);
+  /* ---------- 3. 장바구니 (옵션 조합 단위) ---------- */
+  const itemTotal = () => cart.reduce((s, c) => s + c.price * c.qty, 0);
   const itemCount = () => cart.reduce((s, c) => s + c.qty, 0);
 
-  function addToCart(id) {
-    const row = cart.find((c) => c.id === id);
-    row ? (row.qty += 1) : cart.push({ id, qty: 1 });
+  function addLine(line) {
+    const row = cart.find((c) => c.key === line.key);
+    row ? (row.qty += line.qty) : cart.push(line);
     persist();
-    toast(`${find(id).name} 담음`);
   }
-  function setQty(id, d) {
-    const row = cart.find((c) => c.id === id);
+  function setQty(key, d) {
+    const row = cart.find((c) => c.key === key);
     if (!row) return;
     row.qty += d;
-    if (row.qty <= 0) cart = cart.filter((c) => c.id !== id);
+    if (row.qty <= 0) cart = cart.filter((c) => c.key !== key);
     persist();
   }
-  function removeItem(id) {
-    cart = cart.filter((c) => c.id !== id);
+  function removeItem(key) {
+    cart = cart.filter((c) => c.key !== key);
     persist();
   }
   function persist() {
@@ -197,23 +265,20 @@
   function renderCart() {
     const ul = $("#cart-items");
     const empty = $("#cart-empty");
-    ul.innerHTML = cart.map((c) => {
-      const p = find(c.id);
-      if (!p) return "";
-      return `<li class="cart-row" data-id="${p.id}">
+    ul.innerHTML = cart.map((c) => `
+      <li class="cart-row" data-key="${c.key}">
         <div>
-          <div class="ci-name">${p.name}</div>
-          <div class="ci-meta">${p.weight} · ${p.bunches}</div>
+          <div class="ci-name">${c.name}</div>
+          <div class="ci-meta">${c.opt.weight} · ${c.opt.bunch} · ${c.opt.box} · ${c.opt.wrap}</div>
           <div class="qty">
-            <button data-dec="${p.id}" aria-label="수량 줄이기">−</button>
+            <button data-dec="${c.key}" aria-label="수량 줄이기">−</button>
             <span>${c.qty}</span>
-            <button data-inc="${p.id}" aria-label="수량 늘리기">+</button>
-            <button class="ci-remove" data-rm="${p.id}">삭제</button>
+            <button data-inc="${c.key}" aria-label="수량 늘리기">+</button>
+            <button class="ci-remove" data-rm="${c.key}">삭제</button>
           </div>
         </div>
-        <span class="ci-price">${won(p.price * c.qty)}</span>
-      </li>`;
-    }).join("");
+        <span class="ci-price">${won(c.price * c.qty)}</span>
+      </li>`).join("");
     const has = cart.length > 0;
     empty.style.display = has ? "none" : "block";
     $("#cart-total").textContent = won(itemTotal());
@@ -255,10 +320,9 @@
   function buildSummary(form) {
     const f = new FormData(form);
     const method = f.get("method");
-    const lines = cart.map((c) => {
-      const p = find(c.id);
-      return `· ${p.name} (${p.weight}) ${c.qty}개 — ${won(p.price * c.qty)}`;
-    });
+    const lines = cart.map((c) =>
+      `· ${c.name} ${c.opt.weight}/${c.opt.bunch}/${c.opt.box}/${c.opt.wrap} ${c.qty}개 — ${won(c.price * c.qty)}`
+    );
     return [
       `[${FARM.name} 주문]`,
       `성함: ${f.get("name")}`,
@@ -322,6 +386,14 @@
     cart = [];
     persist();
     showView("done");
+  }
+
+  /* ---------- 장바구니 담김 확인 ---------- */
+  function showAdded(line) {
+    const am = $("#added-modal");
+    $("#added-line").textContent =
+      `${line.name} · ${line.opt.weight}/${line.opt.bunch}/${line.opt.box}/${line.opt.wrap} · ${line.qty}개`;
+    am.hidden = false;
   }
 
   /* ---------- 6. 토스트 ---------- */
@@ -450,13 +522,23 @@
   /* ---------- 8. 이벤트 바인딩 ---------- */
   function bind() {
     document.addEventListener("click", (e) => {
-      const t = e.target.closest("[data-add],[data-inc],[data-dec],[data-rm]");
+      const t = e.target.closest("[data-inc],[data-dec],[data-rm],[data-grp],[data-pq],#pdp-add");
       if (!t) return;
-      if (t.dataset.add) addToCart(t.dataset.add);
+      if (t.id === "pdp-add") addCurrentToCart();
+      else if (t.dataset.grp) selectOption(t.dataset.grp, Number(t.dataset.i));
+      else if (t.dataset.pq) setPdpQty(Number(t.dataset.pq));
       else if (t.dataset.inc) setQty(t.dataset.inc, 1);
       else if (t.dataset.dec) setQty(t.dataset.dec, -1);
       else if (t.dataset.rm) removeItem(t.dataset.rm);
     });
+
+    // 장바구니 담김 확인 모달
+    const am = $("#added-modal");
+    const closeAdded = () => { am.hidden = true; };
+    $("#added-continue").addEventListener("click", closeAdded);
+    $("#added-view").addEventListener("click", () => { closeAdded(); openDrawer(); });
+    am.addEventListener("click", (e) => e.target === am && closeAdded());
+    document.addEventListener("keydown", (e) => e.key === "Escape" && !am.hidden && closeAdded());
 
     $("#open-cart").addEventListener("click", openDrawer);
     $("#floating-cart").addEventListener("click", openDrawer);
@@ -482,7 +564,7 @@
   renderTrust();
   renderValues();
   renderGrowth();
-  renderProducts();
+  renderPDP();
   renderCart();
   updateBadges();
   bind();
