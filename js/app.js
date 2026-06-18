@@ -484,11 +484,14 @@
     backdrop.hidden = true;
     document.body.style.overflow = "";
   }
+  let orderMethod = "sms";
+
   function showView(v) {
-    $("#cart-view").hidden = v !== "cart";
+    $("#cart-view").hidden     = v !== "cart";
+    $("#method-view").hidden   = v !== "method";
     $("#checkout-view").hidden = v !== "checkout";
-    $("#done-view").hidden = v !== "done";
-    const stepMap = { cart: 0, checkout: 1, done: 2 };
+    $("#done-view").hidden     = v !== "done";
+    const stepMap = { cart: 0, method: 1, checkout: 2, done: 3 };
     const idx = stepMap[v] ?? 0;
     $$(".drawer-step").forEach((s, i) => {
       s.classList.toggle("active", i === idx);
@@ -538,6 +541,13 @@
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "처리 중…"; }
     const summary = buildSummary(form);
 
+    // SMS 자동 열기 — form submit(사용자 제스처) 체인 안에서 동기적으로 실행
+    const smsA = document.createElement("a");
+    smsA.href = smsHref(summary);
+    document.body.appendChild(smsA);
+    smsA.click();
+    document.body.removeChild(smsA);
+
     // (A) 폼 엔드포인트가 있으면 이메일 자동 전송 시도
     if (CONFIG.formEndpoint) {
       try {
@@ -553,16 +563,14 @@
 
   function showDone(summary) {
     $("#order-summary").textContent = summary;
-    $("#done-desc").textContent = CONFIG.formEndpoint
-      ? "주문이 농장으로 전송되었습니다. 아래 내용을 한 번 더 보내주시면 더 확실합니다."
-      : "아래 버튼으로 주문 내용을 농장에 전송해 주세요.";
+    $("#done-desc").textContent = "문자 앱이 열렸습니다. 내용을 확인하고 전송해 주세요. 앱이 열리지 않았다면 아래 버튼을 눌러주세요.";
 
     const tel = digits(FARM.phone);
     const body = encodeURIComponent(summary);
     const actions = [
-      `<a class="btn btn-primary full" href="sms:${tel}?&body=${body}">문자로 주문 보내기</a>`,
+      `<a class="btn btn-primary full" href="sms:${tel}?&body=${body}">📱 문자 다시 열기</a>`,
       CONFIG.kakaoUrl ? `<a class="btn btn-ghost full" target="_blank" rel="noopener" href="${CONFIG.kakaoUrl}">카카오톡 상담</a>` : "",
-      `<a class="btn btn-ghost full" href="tel:${tel}">전화 주문 (${FARM.phone})</a>`,
+      `<a class="btn btn-ghost full" href="tel:${tel}">📞 전화 주문 (${FARM.phone})</a>`,
       `<button class="btn btn-ghost full" id="copy-order" type="button">주문 내용 복사</button>`,
     ].filter(Boolean).join("");
     $("#done-actions").innerHTML = actions;
@@ -797,8 +805,19 @@
     backdrop.addEventListener("click", closeDrawer);
     document.addEventListener("keydown", (e) => e.key === "Escape" && closeDrawer());
 
-    $("#go-checkout").addEventListener("click", () => showView("checkout"));
-    $("#back-cart").addEventListener("click", () => showView("cart"));
+    // 주문하기 → 방법 선택 화면
+    $("#go-checkout").addEventListener("click", () => showView("method"));
+
+    // 방법 선택
+    $("#go-sms").addEventListener("click", () => { orderMethod = "sms"; showView("checkout"); });
+    $("#go-call").addEventListener("click", () => {
+      window.location.href = `tel:${digits(FARM.phone)}`;
+      closeDrawer();
+    });
+    $("#back-method").addEventListener("click", () => showView("cart"));
+
+    // 정보 입력 폼
+    $("#back-cart").addEventListener("click", () => showView("method"));
     $("#new-order").addEventListener("click", () => { showView("cart"); closeDrawer(); });
     $("#checkout-view").addEventListener("submit", submitOrder);
 

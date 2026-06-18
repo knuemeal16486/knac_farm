@@ -582,6 +582,28 @@ html{scrollbar-width:thin}
 .drawer-step.active{color:var(--ink);font-weight:800}
 .drawer-step.done{color:var(--sage-d)}
 
+/* ============================================================
+   주문 방법 선택 화면
+   ============================================================ */
+.method-choice{display:flex;flex-direction:column;gap:.9rem;padding:.2rem 0}
+.method-title{font-family:var(--serif);font-size:1.2rem;margin-bottom:.1rem}
+.method-opt{
+  display:flex;align-items:center;gap:1rem;padding:1.2rem 1.1rem;
+  border:1.5px solid var(--line);border-radius:var(--rad);background:var(--paper-2);
+  cursor:pointer;text-align:left;font-family:var(--sans);transition:.18s ease;width:100%;
+}
+.method-opt:hover{border-color:var(--ink);box-shadow:var(--shadow)}
+.method-opt:active{transform:scale(.98)}
+.method-ic{font-size:1.9rem;flex:0 0 auto;line-height:1}
+.method-opt-text{flex:1}
+.method-opt-text strong{display:block;font-size:1rem;font-weight:700;margin-bottom:.3rem}
+.method-opt-text p{font-size:.82rem;color:var(--ink-soft);margin:0;line-height:1.55}
+.method-arrow{color:var(--ink-soft);font-size:1.2rem;flex:0 0 auto}
+.checkout-hint{
+  font-size:.84rem;color:var(--sage-d);font-weight:600;background:rgba(143,166,106,.1);
+  border-left:3px solid var(--sage-d);padding:.6rem .9rem;border-radius:0 8px 8px 0;margin-bottom:1rem
+}
+
 /* 성장 일지 카드 호버 */
 .g-card{transition:transform .2s ease,box-shadow .2s ease}
 .g-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}

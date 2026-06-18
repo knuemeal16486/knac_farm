@@ -187,7 +187,9 @@
     <div class="drawer-steps" aria-hidden="true">
       <span class="drawer-step active">장바구니</span>
       <span class="drawer-step-sep">›</span>
-      <span class="drawer-step">주문 정보</span>
+      <span class="drawer-step">주문방법</span>
+      <span class="drawer-step-sep">›</span>
+      <span class="drawer-step">정보입력</span>
       <span class="drawer-step-sep">›</span>
       <span class="drawer-step">완료</span>
     </div>
@@ -200,11 +202,36 @@
         <div class="row"><span>상품 합계</span><strong id="cart-total">0원</strong></div>
         <p class="ship-note" id="ship-note"></p>
       </div>
-      <button class="btn btn-primary full" id="go-checkout" disabled>주문서 작성</button>
+      <button class="btn btn-primary full" id="go-checkout" disabled>주문하기</button>
     </div>
 
-    <!-- 2단계: 주문서 -->
+    <!-- 2단계: 주문 방법 선택 -->
+    <div class="drawer-body" id="method-view" hidden>
+      <div class="method-choice">
+        <h4 class="method-title">어떻게 주문하시겠어요?</h4>
+        <button class="method-opt" id="go-sms" type="button">
+          <span class="method-ic">💬</span>
+          <div class="method-opt-text">
+            <strong>문자로 주문</strong>
+            <p>이름·주소를 입력하면<br/>장바구니 내용이 자동으로 채워진 문자를 보낼 수 있어요</p>
+          </div>
+          <span class="method-arrow">›</span>
+        </button>
+        <button class="method-opt" id="go-call" type="button">
+          <span class="method-ic">📞</span>
+          <div class="method-opt-text">
+            <strong>전화로 주문</strong>
+            <p>농장 전화로 바로 연결됩니다</p>
+          </div>
+          <span class="method-arrow">›</span>
+        </button>
+        <button class="btn btn-ghost full" id="back-method" type="button">← 장바구니로</button>
+      </div>
+    </div>
+
+    <!-- 3단계: 주문 정보 입력 -->
     <form class="drawer-body" id="checkout-view" hidden>
+      <p class="checkout-hint">입력하신 정보가 문자에 자동으로 채워집니다.</p>
       <label>받으시는 분 성함
         <input name="name" required autocomplete="name" />
       </label>
@@ -224,11 +251,11 @@
       </label>
       <div class="checkout-foot">
         <button type="button" class="btn btn-ghost" id="back-cart">← 뒤로</button>
-        <button type="submit" class="btn btn-primary">주문 접수하기</button>
+        <button type="submit" class="btn btn-primary">문자 내용 확인 →</button>
       </div>
     </form>
 
-    <!-- 3단계: 완료 -->
+    <!-- 4단계: 완료 -->
     <div class="drawer-body" id="done-view" hidden>
       <div class="done-mark" aria-hidden="true">✓</div>
       <h4>주문이 정리되었습니다</h4>
