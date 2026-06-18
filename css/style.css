@@ -62,7 +62,7 @@ section{scroll-margin-top:64px}
 }
 .brand{display:flex;align-items:center;gap:.55rem;color:var(--ink)}
 .brand-mark{color:var(--sage-d);display:flex}
-.brand-name{font-family:var(--serif);font-weight:700;font-size:1.12rem;letter-spacing:.01em}
+.brand-name{font-family:var(--serif);font-weight:700;font-size:1.12rem;letter-spacing:.01em;white-space:nowrap}
 .nav{display:none;gap:1.8rem;margin-left:auto;font-weight:500;font-size:.95rem}
 .nav a{color:var(--ink-soft);transition:.15s}
 .nav a:hover{color:var(--ink)}
@@ -101,7 +101,7 @@ section{scroll-margin-top:64px}
 }
 .hero-sub{font-size:clamp(1.02rem,2.4vw,1.2rem);color:var(--ink-soft);max-width:34ch;line-height:1.8}
 .hero-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2rem}
-.hero-proof{display:flex;align-items:center;gap:1.6rem;flex-wrap:wrap}
+.hero-proof{display:flex;align-items:center;gap:1.6rem;flex-wrap:wrap;justify-content:center}
 .brix-badge{
   background:var(--paper-2);border:1px solid var(--line);border-radius:var(--rad);
   box-shadow:var(--shadow);padding:1.3rem 1.7rem;display:flex;flex-direction:column;align-items:center;line-height:1;
@@ -343,6 +343,7 @@ section{scroll-margin-top:64px}
   border:1px solid var(--line);background:var(--paper-2);color:var(--ink-soft);
   padding:.45rem 1rem;border-radius:999px;font-weight:700;font-size:.85rem;cursor:pointer;
   transition:.18s ease;font-family:var(--sans);
+  min-height:44px;display:inline-flex;align-items:center;justify-content:center;
 }
 .g-dot:hover{border-color:var(--ink);color:var(--ink)}
 .g-dot.on{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
@@ -402,6 +403,7 @@ section{scroll-margin-top:64px}
   border:1.5px solid var(--line);background:var(--paper-2);color:var(--ink);
   padding:.55rem 1.15rem;border-radius:999px;font-weight:700;font-size:.9rem;cursor:pointer;
   transition:.15s ease;font-family:var(--sans);
+  min-height:44px;display:inline-flex;align-items:center;justify-content:center;
 }
 .opt-pill:hover{border-color:var(--ink)}
 .opt-pill.on{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
@@ -468,7 +470,7 @@ html{scrollbar-width:thin}
 .stat{text-align:center;padding:.4rem;border-right:1px solid rgba(244,239,228,.16)}
 .stat:last-child{border-right:none}
 .stat-num{display:block;font-family:var(--serif);font-weight:700;color:#c7d98f;
-  font-size:clamp(1.8rem,5vw,2.8rem);line-height:1}
+  font-size:clamp(1.4rem,6vw,2.8rem);line-height:1}
 .stat-label{font-size:.74rem;opacity:.72;letter-spacing:.05em;margin-top:.45rem}
 
 /* 판매 전(수확 전) 패널 */
@@ -511,3 +513,48 @@ html{scrollbar-width:thin}
   padding:.8rem 1rem;font-size:.85rem;color:var(--ink);margin-bottom:1rem;line-height:1.6}
 .bulk-note a{color:var(--sage-d);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--sage)}
 #pdp-order{margin-top:.2rem}
+
+/* ============================================================
+   모바일 UX 최적화
+   ============================================================ */
+
+/* 히어로: 모바일에서 텍스트↔배지 간격 축소 */
+@media(max-width:819px){
+  .hero-wrap{gap:1.8rem}
+}
+
+/* 농부 사진 프레임: 4/5 비율이면 375px 폰에서 ~425px 세로로 뷰포트를 꽉 채움 → 4/3으로 완화 */
+@media(max-width:819px){
+  .photo-frame{aspect-ratio:4/3}
+}
+
+/* 농부 편지: 행간 완화 (2.05 → 1.85) */
+@media(max-width:819px){
+  .story-letter{line-height:1.85}
+}
+
+/* 섹션 헤드 하단 여백 축소 */
+@media(max-width:819px){
+  .section-head{margin-bottom:2rem}
+}
+
+/* 성장 일지 날짜 버튼: 터치 타깃 확보를 위해 상하 패딩 추가 */
+@media(max-width:819px){
+  .g-dot{padding-top:.65rem;padding-bottom:.65rem}
+}
+
+/* 수량 +/− 버튼: 터치 타깃 확대 */
+@media(max-width:819px){
+  .sel-qty button,.qty button{width:34px;height:34px}
+  .pdp-qty button{width:36px;height:36px}
+}
+
+/* PDP 구매 영역: 360px 미만 아주 좁은 화면에서 세로 배치 */
+@media(max-width:359px){
+  .pdp-buy{flex-direction:column;align-items:flex-start;gap:.6rem}
+}
+
+/* 하단 플로팅 장바구니 바(~68px)가 푸터 콘텐츠를 가리지 않도록 여유 공간 추가 */
+@media(max-width:819px){
+  .footer{padding-bottom:5.5rem}
+}
