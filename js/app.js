@@ -11,6 +11,12 @@
   const digits = (s) => (s || "").replace(/[^0-9]/g, "");
   const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* 문자(SMS) 양식 자동완성 */
+  const smsHref = (body) => `sms:${digits(FARM.phone)}?&body=${encodeURIComponent(body)}`;
+  const inquiryBody = () => `[${FARM.name} 문의]\n성함: \n연락처: \n문의 내용: `;
+  const bulkBody = () =>
+    `[${FARM.name} 대량주문 문의]\n성함: \n연락처: \n희망 구성/수량(상자): \n받는 주소: \n요청사항: `;
+
   /* 장바구니 영속화 (localStorage 불가 환경에서도 동작) */
   const store = {
     read() {
@@ -184,22 +190,25 @@
         <div id="opt-groups"></div>
         ${CONFIG.saleOpen ? `
         <div class="pdp-buy">
-          <div class="pdp-price"><span class="pdp-price-label">합계</span><span id="pdp-price"></span></div>
-          <div class="pdp-qty" role="group" aria-label="수량">
+          <div class="pdp-price"><span class="pdp-price-label">담을 금액</span><span id="pdp-price"></span></div>
+          <div class="pdp-qty" role="group" aria-label="수량(상자)">
             <button type="button" data-pq="-1" aria-label="수량 줄이기">−</button>
             <span id="pdp-qty">1</span>
             <button type="button" data-pq="1" aria-label="수량 늘리기">+</button>
+            <span class="pdp-qty-unit">상자</span>
           </div>
         </div>
         <button class="btn btn-primary full" id="pdp-add" ${PRODUCT.soldout ? "disabled" : ""}>
-          ${PRODUCT.soldout ? "품절" : "장바구니에 담기"}
-        </button>` : `
+          ${PRODUCT.soldout ? "품절" : "이 옵션 장바구니에 담기"}
+        </button>
+        <p class="bulk-link"><a href="${smsHref(bulkBody())}">10상자 이상 대량주문은 별도 문의 →</a></p>
+        <div class="pdp-selected" id="pdp-selected"></div>` : `
         <div class="preharvest">
           <span class="ph-ic">${svg("leaf", 26)}</span>
           <p class="ph-title">올해 수확은 10월이에요</p>
-          <p class="ph-desc">수확 후 판매를 시작합니다. 미리 주문·문의는 아래로 연락 주세요.</p>
+          <p class="ph-desc">수확 후 판매를 시작합니다. 미리 주문·문의는 아래로 연락 주세요. (문자를 누르면 양식이 자동으로 채워집니다.)</p>
           <div class="ph-actions">
-            <a class="btn btn-primary full" href="sms:${digits(FARM.phone)}">문자로 문의하기</a>
+            <a class="btn btn-primary full" href="${smsHref(inquiryBody())}">문자로 문의하기</a>
             <a class="btn btn-ghost full" href="tel:${digits(FARM.phone)}">전화 ${FARM.phone}</a>
           </div>
         </div>`}
@@ -207,6 +216,38 @@
     mountImage($("#pdp-img"), PRODUCT.image, PRODUCT.name, true);
     renderOptions();
     updatePrice();
+    renderPdpSelected();
+  }
+
+  /* 선택한 옵션 인라인 목록 (네이버 쇼핑 방식) */
+  function renderPdpSelected() {
+    const box = $("#pdp-selected");
+    if (!box) return;
+    if (!cart.length) { box.innerHTML = ""; return; }
+    const rows = cart.map((c) => `
+      <div class="sel-row" data-key="${c.key}">
+        <div class="sel-info">
+          <div class="sel-name">${c.name}</div>
+          <div class="sel-opt">${c.opt.weight} · ${c.opt.bunch} · ${c.opt.box} · ${c.opt.wrap}</div>
+        </div>
+        <div class="sel-qty">
+          <button data-dec="${c.key}" aria-label="수량 줄이기">−</button>
+          <span>${c.qty}</span>
+          <button data-inc="${c.key}" aria-label="수량 늘리기">+</button>
+          <span class="sel-unit">상자</span>
+        </div>
+        <div class="sel-line">${won(c.price * c.qty)}<button class="sel-rm" data-rm="${c.key}" aria-label="삭제">✕</button></div>
+      </div>`).join("");
+    const boxes = itemCount();
+    const bulk = boxes >= 10
+      ? `<div class="bulk-note on">10상자 이상 대량주문은 전화·문자로 문의하시면 더 좋은 조건으로 도와드려요. <a href="${smsHref(bulkBody())}">대량주문 문의 →</a></div>`
+      : "";
+    box.innerHTML = `
+      <div class="sel-head">선택한 옵션 <span>${boxes}상자</span></div>
+      ${rows}
+      <div class="sel-total"><span>합계</span><strong>${won(itemTotal())}</strong></div>
+      ${bulk}
+      <button class="btn btn-primary full" id="pdp-order">주문서 작성하기</button>`;
   }
 
   function optGroup(title, grp, items, activeIdx) {
@@ -322,6 +363,7 @@
   function persist() {
     store.write(cart);
     renderCart();
+    renderPdpSelected();
     updateBadges();
   }
 
@@ -633,9 +675,10 @@
   /* ---------- 8. 이벤트 바인딩 ---------- */
   function bind() {
     document.addEventListener("click", (e) => {
-      const t = e.target.closest("[data-inc],[data-dec],[data-rm],[data-grp],[data-pq],#pdp-add");
+      const t = e.target.closest("[data-inc],[data-dec],[data-rm],[data-grp],[data-pq],#pdp-add,#pdp-order");
       if (!t) return;
       if (t.id === "pdp-add") addCurrentToCart();
+      else if (t.id === "pdp-order") { openDrawer(); showView("checkout"); }
       else if (t.dataset.grp) selectOption(t.dataset.grp, Number(t.dataset.i));
       else if (t.dataset.pq) setPdpQty(Number(t.dataset.pq));
       else if (t.dataset.inc) setQty(t.dataset.inc, 1);

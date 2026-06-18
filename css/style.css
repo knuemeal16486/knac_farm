@@ -482,3 +482,32 @@ html{scrollbar-width:thin}
 /* 성장 일지 진행바 */
 .growth-progress{max-width:340px;margin:0 auto 1.3rem;height:3px;background:var(--line);border-radius:999px;overflow:hidden}
 #growth-bar{display:block;height:100%;width:20%;background:var(--sage-d);border-radius:999px;transition:width .15s linear}
+
+/* ============================================================
+   주문 UX: 수량(상자) / 대량주문 / 선택 옵션 인라인 목록
+   ============================================================ */
+.pdp-qty-unit{font-size:.82rem;color:var(--ink-soft);margin-left:.1rem}
+.bulk-link{margin-top:.8rem;text-align:center;font-size:.85rem}
+.bulk-link a{color:var(--sage-d);font-weight:700;border-bottom:1px solid var(--sage)}
+
+.pdp-selected{margin-top:1.4rem}
+.pdp-selected:empty{display:none}
+.sel-head{display:flex;justify-content:space-between;font-weight:700;font-size:.9rem;
+  padding-bottom:.7rem;margin-bottom:.4rem;border-bottom:1px solid var(--line)}
+.sel-head span{color:var(--sage-d)}
+.sel-row{display:flex;align-items:center;gap:.7rem;padding:.7rem 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.sel-info{flex:1 1 100%}
+.sel-name{font-weight:700;font-size:.92rem}
+.sel-opt{font-size:.78rem;color:var(--ink-soft);margin-top:.15rem}
+.sel-qty{display:flex;align-items:center;gap:.45rem}
+.sel-qty button{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:var(--paper);font-size:1rem;cursor:pointer;line-height:1}
+.sel-qty span{min-width:1.4em;text-align:center;font-weight:700}
+.sel-unit{font-size:.78rem;color:var(--ink-soft);font-weight:400}
+.sel-line{margin-left:auto;font-weight:700;display:flex;align-items:center;gap:.6rem}
+.sel-rm{background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:.85rem}
+.sel-total{display:flex;justify-content:space-between;align-items:center;padding-top:1rem;margin-bottom:1rem}
+.sel-total strong{font-family:var(--serif);font-size:1.4rem}
+.bulk-note{background:var(--cream);border:1px dashed var(--sage-d);border-radius:10px;
+  padding:.8rem 1rem;font-size:.85rem;color:var(--ink);margin-bottom:1rem;line-height:1.6}
+.bulk-note a{color:var(--sage-d);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--sage)}
+#pdp-order{margin-top:.2rem}
