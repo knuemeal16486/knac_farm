@@ -9,12 +9,15 @@
   <!-- 폰트: Pretendard(본문) + Gowun Batang(디스플레이) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+
+  <!-- ===== 공지 바 ===== -->
+  <div class="announce" id="announce-bar"></div>
 
   <!-- ===== 상단 바 ===== -->
   <header class="topbar" id="top">
@@ -29,9 +32,10 @@
       <span class="brand-name" data-farm-name>소정리 샤인머스켓 농원</span>
     </a>
     <nav class="nav">
-      <a href="#story">농부 이야기</a>
-      <a href="#products">제품</a>
-      <a href="#visit">오시는 길</a>
+      <a href="#story" data-nav="story">농부 이야기</a>
+      <a href="#growth" data-nav="growth">성장 일지</a>
+      <a href="#products" data-nav="products">제품</a>
+      <a href="#visit" data-nav="visit">오시는 길</a>
     </nav>
     <button class="cart-btn" id="open-cart" aria-label="장바구니 열기">
       장바구니 <span class="cart-count" id="cart-count">0</span>
@@ -40,6 +44,8 @@
 
   <!-- ===== 히어로 ===== -->
   <section class="hero">
+   <div class="hero-bg" id="hero-bg" aria-hidden="true"></div>
+   <div class="hero-wrap">
     <div class="hero-inner">
       <p class="eyebrow" data-farm-tagline>경북 상주 · 모서면 소정리</p>
       <h1 class="hero-title">햇살과 일교차가<br/>한 알에 담깁니다</h1>
@@ -59,6 +65,12 @@
         <span>산지<br/>직송</span>
       </div>
     </div>
+   </div>
+  </section>
+
+  <!-- ===== 신뢰 배지 ===== -->
+  <section class="trust" aria-label="농장 약속">
+    <div class="trust-inner" id="trust-strip"></div>
   </section>
 
   <!-- ===== 농부(아버지) 이야기 ===== -->
@@ -81,6 +93,29 @@
     </div>
   </section>
 
+  <!-- ===== 포도 성장 일지 ===== -->
+  <section class="growth" id="growth">
+    <div class="section-head">
+      <p class="eyebrow">Growth Journal</p>
+      <h2>포도의 성장 일지</h2>
+      <p class="section-desc">한 송이가 식탁에 오르기까지, 날짜별 기록.</p>
+    </div>
+    <div class="growth-wrap">
+      <div class="growth-dots" id="growth-dots" role="tablist" aria-label="성장 단계"></div>
+      <div class="growth-track" id="growth-track"><!-- JS 렌더링 --></div>
+    </div>
+  </section>
+
+  <!-- ===== 소정리가 다른 이유 ===== -->
+  <section class="values" id="values">
+    <div class="section-head">
+      <p class="eyebrow">Why Sojeong-ri</p>
+      <h2>소정리가 다른 이유</h2>
+      <p class="section-desc">깨끗한 환경에서, 정직하게 키웁니다.</p>
+    </div>
+    <div class="values-grid" id="values-grid"><!-- JS 렌더링 --></div>
+  </section>
+
   <!-- ===== 제품 ===== -->
   <section class="products" id="products">
     <div class="section-head">
@@ -93,17 +128,19 @@
 
   <!-- ===== 오시는 길 / 연락처 ===== -->
   <section class="visit" id="visit">
-    <div class="visit-info">
-      <p class="eyebrow">오시는 길</p>
-      <h2>농장에서 직접 만나요</h2>
-      <dl class="visit-list">
-        <dt>주소</dt><dd data-farm-address></dd>
-        <dt>전화</dt><dd><a data-farm-phone-link href="#"></a></dd>
-        <dt>운영</dt><dd data-farm-hours></dd>
-      </dl>
-      <a class="btn btn-ghost" id="map-link" target="_blank" rel="noopener">지도에서 보기</a>
+    <div class="visit-inner">
+      <div class="visit-info">
+        <p class="eyebrow">오시는 길</p>
+        <h2>농장에서 직접 만나요</h2>
+        <dl class="visit-list">
+          <dt>주소</dt><dd data-farm-address></dd>
+          <dt>전화</dt><dd><a data-farm-phone-link href="#"></a></dd>
+          <dt>운영</dt><dd data-farm-hours></dd>
+        </dl>
+        <a class="btn btn-ghost" id="map-link" target="_blank" rel="noopener">지도에서 보기</a>
+      </div>
+      <div class="visit-map" id="visit-map" aria-hidden="true"></div>
     </div>
-    <div class="visit-map" id="visit-map" aria-hidden="true"></div>
   </section>
 
   <footer class="footer">
@@ -178,6 +215,13 @@
   </button>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <button class="to-top" id="to-top" aria-label="맨 위로" hidden>↑</button>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lb-close" aria-label="닫기">✕</button>
+    <img id="lb-img" alt="" />
+  </div>
 
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>

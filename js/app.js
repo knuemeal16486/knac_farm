@@ -25,7 +25,38 @@
   let cart = store.read();
 
   /* ---------- 1. 콘텐츠 바인딩 ---------- */
+  const ICONS = {
+    badge: '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>',
+    leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    drop: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5S12.5 5.5 12 3c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7Z"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>',
+    spark: '<path d="m12 3 1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3Z"/>',
+  };
+  const svg = (name, size) =>
+    `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
+
+  /* 컨테이너에 이미지를 얹는다. 로드 성공 시에만 표시(페이드인), 실패 시 일러스트 유지.
+     zoom=true 면 클릭 시 라이트박스로 확대 가능. */
+  function mountImage(container, src, alt, zoom) {
+    if (!container || !src) return;
+    const img = document.createElement("img");
+    img.className = "ph-img";
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.alt = alt || "";
+    img.addEventListener("load", () => {
+      container.querySelectorAll(".photo-placeholder").forEach((n) => n.remove());
+      img.classList.add("loaded");
+      if (zoom) { img.dataset.zoom = src; img.classList.add("zoomable"); }
+    });
+    img.addEventListener("error", () => img.remove());
+    container.appendChild(img);
+    img.src = src;
+  }
+
   function hydrate() {
+    $("#announce-bar").textContent = CONFIG.announce || "";
     $$("[data-farm-name]").forEach((e) => (e.textContent = FARM.name));
     $$("[data-farm-tagline]").forEach((e) => (e.textContent = FARM.tagline));
     $$("[data-farm-brix]").forEach((e) => (e.textContent = FARM.brix));
@@ -39,7 +70,7 @@
     $("[data-farmer-name]").textContent = FARMER.name;
     $("[data-farmer-years]").textContent = FARMER.years ? `· 경력 ${FARMER.years}년` : "";
     $("[data-farmer-letter]").textContent = FARMER.letter;
-    loadPhoto($('[data-photo="farmer"]'), FARMER.photo);
+    mountImage($('[data-photo="farmer"]'), FARMER.photo, FARMER.name + " 농부", true);
 
     $("#map-link").href =
       "https://map.naver.com/v5/search/" + encodeURIComponent(FARM.mapQuery);
@@ -47,16 +78,23 @@
     $("#bank-acc").textContent = CONFIG.bankAccount;
   }
 
-  /* 사진이 실제로 존재할 때만 표시 (없으면 일러스트 유지) */
-  function loadPhoto(frame, src) {
-    if (!frame || !src) return;
-    const img = new Image();
-    img.onload = () => {
-      frame.innerHTML = "";
-      img.alt = "";
-      frame.appendChild(img);
-    };
-    img.src = src;
+  /* ---------- 신뢰 배지 / 가치 렌더 ---------- */
+  function renderTrust() {
+    const icons = ["badge", "leaf", "clock"];
+    $("#trust-strip").innerHTML = TRUST.map((t, i) => `
+      <div class="trust-item">
+        <span class="trust-ic">${svg(icons[i % 3], 28)}</span>
+        <div><div class="trust-tt">${t.title}</div><div class="trust-ds">${t.desc}</div></div>
+      </div>`).join("");
+  }
+  function renderValues() {
+    const icons = ["drop", "badge", "sun", "spark"];
+    $("#values-grid").innerHTML = VALUES.map((v, i) => `
+      <article class="value-card">
+        <span class="value-ic">${svg(icons[i % 4], 30)}</span>
+        <h3 class="value-title">${v.title}</h3>
+        <p class="value-desc">${v.desc}</p>
+      </article>`).join("");
   }
 
   /* ---------- 2. 제품 렌더링 ---------- */
@@ -90,14 +128,41 @@
         </div>
       </article>`).join("");
 
-    // 사진 있으면 덮어쓰기
+    // 사진 있으면 덮어쓰기 (없으면 일러스트 유지)
     PRODUCTS.forEach((p) => {
       const box = $(`.card[data-id="${p.id}"] .card-img`);
-      if (box && p.image) {
-        const img = new Image();
-        img.onload = () => box.appendChild(img);
-        img.src = p.image;
-      }
+      mountImage(box, p.image, p.name, true);
+    });
+  }
+
+  /* ---------- 성장 일지 렌더 ---------- */
+  function renderGrowth() {
+    const dots = $("#growth-dots");
+    const track = $("#growth-track");
+    if (!dots || !track) return;
+    dots.innerHTML = GROWTH.map((g, i) =>
+      `<button class="g-dot${i === 0 ? " on" : ""}" data-go="${i}" role="tab" aria-label="${g.date} ${g.title}">${g.date}</button>`
+    ).join("");
+    track.innerHTML = GROWTH.map((g, i) => `
+      <article class="g-card" data-idx="${i}">
+        <div class="g-img">
+          <span class="g-step">${i + 1} / ${GROWTH.length}</span>
+          ${g.brix ? `<span class="g-brix">${g.brix} Brix</span>` : ""}
+          <svg viewBox="0 0 40 48" width="56" height="68"><g fill="currentColor" opacity=".7">
+            <circle cx="20" cy="14" r="6"/><circle cx="11" cy="22" r="6"/><circle cx="29" cy="22" r="6"/>
+            <circle cx="20" cy="29" r="6"/><circle cx="13" cy="35" r="5.5"/><circle cx="27" cy="35" r="5.5"/><circle cx="20" cy="41" r="5"/>
+          </g></svg>
+        </div>
+        <div class="g-body">
+          <span class="g-date">${g.date}</span>
+          <h3 class="g-title">${g.title}</h3>
+          <p class="g-desc">${g.desc}</p>
+        </div>
+      </article>`).join("");
+
+    GROWTH.forEach((g, i) => {
+      const box = track.querySelector(`.g-card[data-idx="${i}"] .g-img`);
+      mountImage(box, g.image, `${g.date} ${g.title}`, true);
     });
   }
 
@@ -271,7 +336,7 @@
 
   /* ---------- 7. 스크롤 등장 ---------- */
   function setupReveal() {
-    const targets = $$(".story, .section-head, .card, .visit-info");
+    const targets = $$(".trust-item, .story, .section-head, .g-card, .value-card, .card, .visit-info");
     targets.forEach((t) => t.classList.add("reveal"));
     if (!("IntersectionObserver" in window)) {
       targets.forEach((t) => t.classList.add("in"));
@@ -281,6 +346,105 @@
       es.forEach((en) => en.isIntersecting && (en.target.classList.add("in"), io.unobserve(en.target)));
     }, { threshold: 0.12 });
     targets.forEach((t) => io.observe(t));
+  }
+
+  /* ---------- 7.5 인터랙션 (전환·스크롤스파이·라이트박스 등) ---------- */
+  function mountHeroBg() {
+    if (!FARM.heroImage) return;
+    const el = $("#hero-bg");
+    const im = new Image();
+    im.onload = () => {
+      el.style.backgroundImage = `url("${FARM.heroImage}")`;
+      $(".hero").classList.add("has-bg");
+    };
+    im.src = FARM.heroImage;
+  }
+
+  function countUpBrix() {
+    const el = $(".brix-num[data-farm-brix]");
+    if (!el) return;
+    const target = Number(FARM.brix) || 0;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !target) {
+      el.textContent = target; return;
+    }
+    const dur = 1100, t0 = performance.now();
+    const tick = (t) => {
+      const p = Math.min((t - t0) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(eased * target);
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  function setupHeader() {
+    const bar = $(".topbar");
+    const onScroll = () => bar.classList.toggle("scrolled", window.scrollY > 8);
+    onScroll();
+    addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  function setupScrollSpy() {
+    const links = $$(".nav a[data-nav]");
+    if (!links.length || !("IntersectionObserver" in window)) return;
+    const map = {};
+    links.forEach((l) => (map[l.dataset.nav] = l));
+    const io = new IntersectionObserver((es) => {
+      es.forEach((en) => {
+        if (!en.isIntersecting) return;
+        links.forEach((l) => l.classList.remove("active"));
+        map[en.target.id]?.classList.add("active");
+      });
+    }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
+    ["story", "growth", "products", "visit"].forEach((id) => {
+      const s = document.getElementById(id);
+      if (s) io.observe(s);
+    });
+  }
+
+  function setupGrowth() {
+    const track = $("#growth-track");
+    const dots = $$(".g-dot");
+    if (!track || !dots.length) return;
+    dots.forEach((d) =>
+      d.addEventListener("click", () => {
+        const card = track.querySelector(`.g-card[data-idx="${d.dataset.go}"]`);
+        card?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      })
+    );
+    if (!("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver((es) => {
+      es.forEach((en) => {
+        if (!en.isIntersecting) return;
+        const i = en.target.dataset.idx;
+        dots.forEach((d) => d.classList.toggle("on", d.dataset.go === i));
+      });
+    }, { root: track, threshold: 0.6 });
+    $$(".g-card", track).forEach((c) => io.observe(c));
+  }
+
+  function setupToTop() {
+    const btn = $("#to-top");
+    if (!btn) return;
+    const onScroll = () => (btn.hidden = window.scrollY < 600);
+    onScroll();
+    addEventListener("scroll", onScroll, { passive: true });
+    btn.addEventListener("click", () =>
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    );
+  }
+
+  function setupLightbox() {
+    const lb = $("#lightbox"), img = $("#lb-img");
+    if (!lb) return;
+    const open = (src) => { img.src = src; lb.hidden = false; document.body.style.overflow = "hidden"; };
+    const close = () => { lb.hidden = true; img.removeAttribute("src"); document.body.style.overflow = ""; };
+    document.addEventListener("click", (e) => {
+      const z = e.target.closest("img.zoomable");
+      if (z) { open(z.dataset.zoom); return; }
+      if (e.target.closest(".lb-close") || e.target === lb) close();
+    });
+    document.addEventListener("keydown", (e) => e.key === "Escape" && !lb.hidden && close());
   }
 
   /* ---------- 8. 이벤트 바인딩 ---------- */
@@ -315,9 +479,19 @@
 
   /* ---------- 부트 ---------- */
   hydrate();
+  renderTrust();
+  renderValues();
+  renderGrowth();
   renderProducts();
   renderCart();
   updateBadges();
   bind();
   setupReveal();
+  mountHeroBg();
+  countUpBrix();
+  setupHeader();
+  setupScrollSpy();
+  setupGrowth();
+  setupToTop();
+  setupLightbox();
 })();
