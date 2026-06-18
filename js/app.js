@@ -486,11 +486,31 @@
   }
   let orderMethod = "sms";
 
+  function setupCallAvailability() {
+    const btn = $("#go-call");
+    const desc = $("#call-avail-desc");
+    const badge = $("#call-hours-badge");
+    if (!btn) return;
+    const { start = 8, end = 18 } = CONFIG.callHours || {};
+    const pad = (n) => String(n).padStart(2, "0");
+    const range = `${pad(start)}:00 ~ ${pad(end)}:00`;
+    if (badge) badge.textContent = range;
+    const h = new Date().getHours();
+    const available = h >= start && h < end;
+    btn.disabled = !available;
+    if (desc) {
+      desc.textContent = available
+        ? "농장 전화로 바로 연결됩니다"
+        : `현재 통화 가능 시간이 아닙니다 (${range})`;
+    }
+  }
+
   function showView(v) {
     $("#cart-view").hidden     = v !== "cart";
     $("#method-view").hidden   = v !== "method";
     $("#checkout-view").hidden = v !== "checkout";
     $("#done-view").hidden     = v !== "done";
+    if (v === "method") setupCallAvailability();
     const stepMap = { cart: 0, method: 1, checkout: 2, done: 3 };
     const idx = stepMap[v] ?? 0;
     $$(".drawer-step").forEach((s, i) => {

@@ -103,6 +103,9 @@ const CONFIG = {
   // ★ 가격을 정하고 수확하면 true 로 바꾸세요.
   saleOpen: true,
 
+  // 전화 주문 가능 시간 (24시간 기준, start 이상 end 미만)
+  callHours: { start: 8, end: 18 },
+
   // 상단 공지 바 문구
   announce: "10월 수확 · 선착순 예약 접수 중 · 당도 17 Brix 이상 보장 · 산지직송",
 
