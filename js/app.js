@@ -79,6 +79,20 @@
       "https://map.naver.com/v5/search/" + encodeURIComponent(FARM.mapQuery);
     $("#ship-note").textContent = CONFIG.shipping;
     $("#bank-acc").textContent = CONFIG.bankAccount;
+
+    const b = CONFIG.business;
+    if (b) {
+      const parts = [
+        `상호 ${b.name}`,
+        `대표 ${b.owner}`,
+        `사업자등록번호 ${b.regNo}`,
+        b.mailOrderNo ? `통신판매업 ${b.mailOrderNo}` : null,
+        FARM.address,
+        FARM.phone,
+        b.type,
+      ].filter(Boolean);
+      $("#biz-info").textContent = parts.join("  ·  ");
+    }
   }
 
   /* ---------- 신뢰 배지 / 가치 렌더 ---------- */

@@ -426,3 +426,6 @@ section{scroll-margin-top:64px}
 .added-actions{display:flex;gap:.7rem}
 .added-actions .btn{flex:1;padding-inline:1rem}
 @keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* 푸터 사업자 정보 */
+.biz-info{margin-top:1.1rem;font-size:.74rem;line-height:1.7;opacity:.55;max-width:680px;margin-inline:auto;padding-inline:1rem}
