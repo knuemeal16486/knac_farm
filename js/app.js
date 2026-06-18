@@ -76,14 +76,18 @@
     $("[data-farmer-letter]").textContent = FARMER.letter;
     mountImage($('[data-photo="farmer"]'), FARMER.photo, FARMER.name + " 농부", true);
 
-    $("#map-link").href =
-      "https://map.naver.com/v5/search/" + encodeURIComponent(FARM.mapQuery);
+    const hasCoord = FARM.lat && FARM.lng;
+    const coord = hasCoord ? `${FARM.lat},${FARM.lng}` : null;
+
+    $("#map-link").href = hasCoord
+      ? `https://map.kakao.com/link/map/${encodeURIComponent(FARM.name)},${FARM.lat},${FARM.lng}`
+      : "https://map.naver.com/v5/search/" + encodeURIComponent(FARM.mapQuery);
 
     const mapEl = $("#visit-map");
     if (mapEl) {
-      const q = encodeURIComponent(FARM.mapQuery || FARM.address);
+      const q = encodeURIComponent(coord || FARM.mapQuery || FARM.address);
       mapEl.innerHTML =
-        `<iframe title="${FARM.name} 위치" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${q}&z=15&hl=ko&output=embed"></iframe>`;
+        `<iframe title="${FARM.name} 위치" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${q}&z=16&hl=ko&output=embed"></iframe>`;
       mapEl.removeAttribute("aria-hidden");
     }
     $("#ship-note").textContent = CONFIG.shipping;
