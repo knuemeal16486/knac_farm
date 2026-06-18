@@ -91,9 +91,10 @@
 
     const mapEl = $("#visit-map");
     if (mapEl) {
-      const q = encodeURIComponent(coord || FARM.mapQuery || FARM.address);
-      mapEl.innerHTML =
-        `<iframe title="${FARM.name} 위치" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${q}&z=16&hl=ko&output=embed"></iframe>`;
+      const iframeSrc = hasCoord
+        ? `https://map.naver.com/v5/embed?type=place&lat=${FARM.lat}&lng=${FARM.lng}&zoom=16&title=${encodeURIComponent(FARM.name)}`
+        : `https://map.naver.com/v5/search/${encodeURIComponent(FARM.mapQuery || FARM.address)}`;
+      mapEl.innerHTML = `<iframe title="${FARM.name} 위치" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${iframeSrc}"></iframe>`;
       mapEl.removeAttribute("aria-hidden");
     }
     $("#ship-note").textContent = CONFIG.shipping;
@@ -112,6 +113,35 @@
       ].filter(Boolean);
       $("#biz-info").textContent = parts.join("  ·  ");
     }
+
+    const ld = document.createElement("script");
+    ld.type = "application/ld+json";
+    ld.textContent = JSON.stringify([
+      {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: PRODUCT.name,
+        description: PRODUCT.desc,
+        brand: { "@type": "Brand", name: FARM.name },
+        offers: {
+          "@type": "AggregateOffer",
+          priceCurrency: "KRW",
+          lowPrice: Math.min(...OPTIONS.weight.map((w) => w.price)),
+          highPrice: Math.max(...OPTIONS.weight.map((w) => w.price)),
+          availability: PRODUCT.soldout ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+        },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        name: FARM.name,
+        description: `경북 상주 소정리, 해발 ${FARM.elevation}m 백화산 자락에서 손수확한 샤인머스켓.`,
+        address: { "@type": "PostalAddress", streetAddress: FARM.address, addressCountry: "KR" },
+        telephone: FARM.phone,
+        geo: { "@type": "GeoCoordinates", latitude: FARM.lat, longitude: FARM.lng },
+      },
+    ]);
+    document.head.appendChild(ld);
   }
 
   /* ---------- 신뢰 배지 / 가치 렌더 ---------- */
@@ -168,6 +198,7 @@
   /* ---------- 2. 제품 (옵션 선택형) ---------- */
   let sel = { weightIdx: 0, bunchIdx: 0, boxIdx: 0, wrapIdx: 0 };
   let pdpQty = 1;
+  let addCartLocked = false;
 
   const curWeight = () => OPTIONS.weight[sel.weightIdx];
   const unitPrice = () =>
@@ -186,11 +217,11 @@
       <div class="pdp-info">
         <h3 class="pdp-name">${PRODUCT.name}</h3>
         <p class="pdp-brix">${PRODUCT.brixNote || ""}</p>
-        <p class="pdp-desc">${PRODUCT.desc || ""}</p>
+        <p class="pdp-desc" style="white-space:pre-line">${PRODUCT.desc || ""}</p>
         <div id="opt-groups"></div>
         ${CONFIG.saleOpen ? `
         <div class="pdp-buy">
-          <div class="pdp-price"><span class="pdp-price-label">담을 금액</span><span id="pdp-price"></span></div>
+          <div class="pdp-price"><span class="pdp-price-label">가격 (배송비 별도)</span><span id="pdp-price"></span></div>
           <div class="pdp-qty" role="group" aria-label="수량(상자)">
             <button type="button" data-pq="-1" aria-label="수량 줄이기">−</button>
             <span id="pdp-qty">1</span>
@@ -284,11 +315,17 @@
 
   function updatePrice() {
     const el = $("#pdp-price");
-    if (el) el.textContent = won(unitPrice() * pdpQty);
+    if (!el) return;
+    el.textContent = won(unitPrice() * pdpQty);
+    el.classList.remove("price-flash");
+    void el.offsetWidth;
+    el.classList.add("price-flash");
   }
 
   function addCurrentToCart() {
-    if (PRODUCT.soldout) return;
+    if (PRODUCT.soldout || addCartLocked) return;
+    addCartLocked = true;
+    setTimeout(() => { addCartLocked = false; }, 300);
     const w = curWeight();
     const bunch = w.bunches[sel.bunchIdx];
     const box = OPTIONS.box[sel.boxIdx];
@@ -315,7 +352,7 @@
     const track = $("#growth-track");
     if (!dots || !track) return;
     dots.innerHTML = GROWTH.map((g, i) =>
-      `<button class="g-dot${i === 0 ? " on" : ""}" data-go="${i}" role="tab" aria-label="${g.date} ${g.title}">${g.date}</button>`
+      `<button class="g-dot${i === 0 ? " on" : ""}" data-go="${i}" role="tab" aria-selected="${i === 0 ? "true" : "false"}" aria-label="${g.date} ${g.title}">${g.date}</button>`
     ).join("");
     track.innerHTML = GROWTH.map((g, i) => `
       <article class="g-card" data-idx="${i}">
@@ -419,6 +456,12 @@
     $("#cart-view").hidden = v !== "cart";
     $("#checkout-view").hidden = v !== "checkout";
     $("#done-view").hidden = v !== "done";
+    const stepMap = { cart: 0, checkout: 1, done: 2 };
+    const idx = stepMap[v] ?? 0;
+    $$(".drawer-step").forEach((s, i) => {
+      s.classList.toggle("active", i === idx);
+      s.classList.toggle("done", i < idx);
+    });
   }
 
   /* ---------- 5. 주문 처리 ---------- */
@@ -444,14 +487,23 @@
 
   async function submitOrder(e) {
     e.preventDefault();
+    if (!cart.length) { toast("장바구니가 비어 있습니다"); showView("cart"); return; }
     const form = e.target;
     const fd = new FormData(form);
+    const phone = fd.get("phone") || "";
+    if (digits(phone).length < 10) {
+      toast("연락처를 올바르게 입력해 주세요 (10자리 이상)");
+      form.elements.namedItem("phone").focus();
+      return;
+    }
     const method = fd.get("method");
     if (method === "택배" && !(fd.get("address") || "").trim()) {
       toast("주소를 입력해 주세요");
       form.elements.namedItem("address").focus();
       return;
     }
+    const submitBtn = form.querySelector('[type="submit"]');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "처리 중…"; }
     const summary = buildSummary(form);
 
     // (A) 폼 엔드포인트가 있으면 이메일 자동 전송 시도
@@ -568,8 +620,7 @@
     if (reduceMotion()) return;
     const bg = $("#hero-bg"), decor = $(".hero-decor");
     addEventListener("scroll", () => {
-      const y = window.scrollY;
-      if (y > 820) return;
+      const y = Math.min(window.scrollY, 820);
       if (bg) bg.style.transform = `translateY(${y * 0.14}px)`;
       if (decor) decor.style.transform = `translateY(${y * 0.26}px)`;
     }, { passive: true });
@@ -631,20 +682,27 @@
     const track = $("#growth-track");
     const dots = $$(".g-dot");
     if (!track || !dots.length) return;
-    dots.forEach((d) =>
+    dots.forEach((d, idx) => {
       d.addEventListener("click", () => {
         const card = track.querySelector(`.g-card[data-idx="${d.dataset.go}"]`);
         card?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-      })
-    );
+      });
+      d.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") { e.preventDefault(); const n = dots[Math.min(idx + 1, dots.length - 1)]; n?.focus(); n?.click(); }
+        if (e.key === "ArrowLeft")  { e.preventDefault(); const n = dots[Math.max(idx - 1, 0)]; n?.focus(); n?.click(); }
+      });
+    });
     if (!("IntersectionObserver" in window)) return;
     const io = new IntersectionObserver((es) => {
       es.forEach((en) => {
         if (!en.isIntersecting) return;
         const i = en.target.dataset.idx;
-        dots.forEach((d) => d.classList.toggle("on", d.dataset.go === i));
+        dots.forEach((d) => {
+          d.classList.toggle("on", d.dataset.go === i);
+          d.setAttribute("aria-selected", d.dataset.go === i ? "true" : "false");
+        });
       });
-    }, { root: track, threshold: 0.6 });
+    }, { root: track, threshold: 0.75 });
     $$(".g-card", track).forEach((c) => io.observe(c));
   }
 
@@ -719,7 +777,7 @@
     const oc = document.getElementById("open-cart");
     if (oc) oc.style.display = "none";
     const hb = document.querySelector(".hero-actions .btn-primary");
-    if (hb) hb.textContent = "사전 문의하기";
+    if (hb) { hb.textContent = "사전 문의하기"; hb.href = smsHref(inquiryBody()); }
   }
 
   hydrate();

@@ -46,6 +46,9 @@ section{scroll-margin-top:64px}
 .btn-ghost:hover{background:var(--ink);color:var(--paper-2)}
 .btn.full{width:100%}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-primary:active{transform:translateY(1px)}
+.btn-ghost:active{background:var(--ink);color:var(--paper-2)}
+.opt-pill:active{transform:scale(.97)}
 
 /* ---------- 공지 바 ---------- */
 .announce{
@@ -97,7 +100,7 @@ section{scroll-margin-top:64px}
 }
 .hero-title{
   font-family:var(--serif);font-weight:700;
-  font-size:clamp(2.4rem,7vw,4.2rem);line-height:1.22;letter-spacing:-.01em;margin:.3rem 0 1.2rem;
+  font-size:clamp(2.4rem,7vw,4.2rem);line-height:1.35;letter-spacing:-.01em;margin:.3rem 0 1.2rem;
 }
 .hero-sub{font-size:clamp(1.02rem,2.4vw,1.2rem);color:var(--ink-soft);max-width:34ch;line-height:1.8}
 .hero-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2rem}
@@ -469,9 +472,9 @@ html{scrollbar-width:thin}
   padding:clamp(1.8rem,4vw,2.6rem) clamp(1.1rem,4vw,2.8rem)}
 .stat{text-align:center;padding:.4rem;border-right:1px solid rgba(244,239,228,.16)}
 .stat:last-child{border-right:none}
-.stat-num{display:block;font-family:var(--serif);font-weight:700;color:#c7d98f;
+.stat-num{display:block;font-family:var(--serif);font-weight:700;color:#ffffff;
   font-size:clamp(1.4rem,6vw,2.8rem);line-height:1}
-.stat-label{font-size:.74rem;opacity:.72;letter-spacing:.05em;margin-top:.45rem}
+.stat-label{font-size:.74rem;opacity:.85;letter-spacing:.05em;margin-top:.45rem}
 
 /* 판매 전(수확 전) 패널 */
 .preharvest{border:1px solid var(--line);border-radius:var(--rad);background:var(--cream);
@@ -558,3 +561,27 @@ html{scrollbar-width:thin}
 @media(max-width:819px){
   .footer{padding-bottom:5.5rem}
 }
+
+/* 히어로 떠다니는 포도 블롭: 좁은 화면에서 텍스트와 겹침 방지 */
+@media(max-width:599px){
+  .hero-decor{display:none}
+}
+
+/* 가격 변경 피드백 */
+@keyframes priceFlash{0%,100%{background:transparent}30%{background:rgba(143,166,106,.22)}}
+.price-flash{animation:priceFlash .4s ease;border-radius:6px}
+
+/* 드로어 3단계 진행 표시 */
+.drawer-steps{
+  display:flex;align-items:center;justify-content:center;gap:.45rem;
+  padding:.6rem 1.4rem;border-bottom:1px solid var(--line);
+  font-size:.78rem;font-weight:600;color:var(--ink-soft);flex:0 0 auto;
+}
+.drawer-step-sep{opacity:.4}
+.drawer-step{transition:color .2s,font-weight .2s}
+.drawer-step.active{color:var(--ink);font-weight:800}
+.drawer-step.done{color:var(--sage-d)}
+
+/* 성장 일지 카드 호버 */
+.g-card{transition:transform .2s ease,box-shadow .2s ease}
+.g-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
