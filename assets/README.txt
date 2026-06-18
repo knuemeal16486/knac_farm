@@ -1,0 +1,3 @@
+-e 이 폴더에 사진을 넣으세요:
+- farmer.jpg (농부 사진)
+- p1.jpg ~ p4.jpg (제품 사진, data.js의 image 경로와 일치)
