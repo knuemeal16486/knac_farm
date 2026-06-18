@@ -101,7 +101,7 @@ const GROWTH = [
 const CONFIG = {
   // 판매 상태: false=수확 전(가격·장바구니 숨김, 문의 모드) / true=판매 중
   // ★ 가격을 정하고 수확하면 true 로 바꾸세요.
-  saleOpen: false,
+  saleOpen: true,
 
   // 상단 공지 바 문구
   announce: "10월 수확 · 선착순 예약 접수 중 · 당도 17 Brix 이상 보장 · 산지직송",
