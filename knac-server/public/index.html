@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>크낙새 농장 주문 관리</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span class="logo">🍇 크낙새 농장</span>
+    <span class="header-sub">주문 관리</span>
+    <button class="btn-new" onclick="openNewModal()">+ 새 주문</button>
+  </div>
+</header>
+
+<main>
+  <div class="summary-bar" id="summary-bar"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="pending" onclick="setTab('pending')">
+      입금 대기 <span class="badge red" id="badge-pending">0</span>
+    </button>
+    <button class="tab" data-tab="paid" onclick="setTab('paid')">
+      입금 완료 <span class="badge green" id="badge-paid">0</span>
+    </button>
+    <button class="tab" data-tab="shipped" onclick="setTab('shipped')">
+      발송 완료 <span class="badge gray" id="badge-shipped">0</span>
+    </button>
+  </div>
+
+  <div id="order-list" class="order-list">
+    <div class="loading">불러오는 중…</div>
+  </div>
+</main>
+
+<!-- 새 주문 모달 -->
+<div id="new-modal" class="modal-bg" style="display:none" onclick="closeBg(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>새 주문 등록</h2>
+      <button class="btn-x" onclick="closeNewModal()">✕</button>
+    </div>
+    <form id="new-form" onsubmit="submitNew(event)">
+      <div class="form-row">
+        <label>이름 <span class="req">*</span>
+          <input type="text" name="name" required placeholder="홍길동">
+        </label>
+        <label>전화번호 <span class="req">*</span>
+          <input type="tel" name="phone" required placeholder="010-0000-0000">
+        </label>
+      </div>
+
+      <fieldset>
+        <legend>상품 옵션</legend>
+        <div class="opt-row">
+          <select name="weight">
+            <option value="2kg">2kg — 30,000원</option>
+            <option value="4kg">4kg — 55,000원</option>
+          </select>
+          <select name="bunch">
+            <option value="2수">2수</option>
+            <option value="3수">3수</option>
+            <option value="4수">4수</option>
+            <option value="5수">5수</option>
+            <option value="6수">6수</option>
+          </select>
+          <select name="box">
+            <option value="일반상자">일반상자</option>
+            <option value="택배상자">택배상자</option>
+          </select>
+          <select name="wrap">
+            <option value="일반 포장">일반 포장</option>
+            <option value="에어캡 포장">에어캡 포장</option>
+          </select>
+          <label style="flex:0 0 auto;flex-direction:row;align-items:center;gap:.4rem">
+            수량
+            <input type="number" name="qty" min="1" max="20" value="1" style="width:60px">
+          </label>
+        </div>
+      </fieldset>
+
+      <label>금액 (원) <span class="req">*</span>
+        <input type="number" name="amount" required placeholder="55000" min="0">
+      </label>
+      <label>주소 <input type="text" name="address" placeholder="택배 배송 주소"></label>
+      <label>메모 <textarea name="memo" rows="2" placeholder="요청사항"></textarea></label>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeNewModal()">취소</button>
+        <button type="submit" class="btn-ok">등록</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
