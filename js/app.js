@@ -91,7 +91,7 @@
       </div>`).join("");
   }
   function renderValues() {
-    const icons = ["drop", "badge", "sun", "spark"];
+    const icons = ["leaf", "sun", "drop", "spark"];
     $("#values-grid").innerHTML = VALUES.map((v, i) => `
       <article class="value-card">
         <span class="value-ic">${svg(icons[i % 4], 30)}</span>
