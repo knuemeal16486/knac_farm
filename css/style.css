@@ -763,13 +763,14 @@ html{scrollbar-width:thin}
 .guide-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
 .gc-head{display:flex;align-items:center;gap:.75rem}
 .gc-icon{
-  flex:0 0 40px;width:40px;height:40px;border-radius:12px;
-  background:var(--sage-d);color:#fff;
+  flex:0 0 48px;width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(135deg,var(--sage),var(--sage-d));color:#fff;
   display:flex;align-items:center;justify-content:center;
-  font-size:.7rem;font-weight:800;letter-spacing:-.02em;
-  font-family:var(--serif);text-align:center;line-height:1.1;
+  box-shadow:0 4px 12px -4px rgba(95,122,64,.4);
 }
-.guide-card h3{font-family:var(--serif);font-size:1.15rem;font-weight:700;line-height:1.3}
+.gc-title-group{display:flex;flex-direction:column;gap:.1rem}
+.gc-eyebrow-sm{font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--sage-d);text-transform:uppercase;line-height:1}
+.guide-card h3{font-family:var(--serif);font-size:1.15rem;font-weight:700;line-height:1.25;margin:0}
 .gc-desc{font-size:.9rem;color:var(--ink-soft);line-height:1.65}
 .gc-note{
   font-size:.8rem;color:var(--sage-d);background:rgba(143,166,106,.08);
@@ -781,14 +782,14 @@ html{scrollbar-width:thin}
 .brix-cmp{display:flex;flex-direction:column;gap:.6rem}
 .bcmp-row{display:grid;grid-template-columns:6.2rem 1fr 3rem;align-items:center;gap:.7rem}
 .bcmp-label{font-size:.8rem;font-weight:600;color:var(--ink-soft);text-align:right}
-.bcmp-track{height:10px;background:var(--cream);border-radius:999px;overflow:hidden}
+.bcmp-track{height:14px;background:var(--cream);border-radius:999px;overflow:hidden}
 .bcmp-bar{
   height:100%;width:0;background:var(--line);border-radius:inherit;
   transition:width 1s cubic-bezier(.4,0,.2,1);
 }
 .guide-card.in .bcmp-bar{width:var(--w,0)}
 .bcmp-row.bcmp-hl .bcmp-label{color:var(--sage-d);font-weight:700}
-.bcmp-row.bcmp-hl .bcmp-bar{background:linear-gradient(90deg,var(--sage),var(--sage-d))}
+.bcmp-row.bcmp-hl .bcmp-bar{background:linear-gradient(90deg,var(--sage),var(--gold))}
 .bcmp-row.bcmp-hl .bcmp-val{color:var(--sage-d);font-weight:800}
 .bcmp-val{font-size:.8rem;font-weight:700;color:var(--ink-soft);white-space:nowrap}
 
@@ -813,15 +814,23 @@ html{scrollbar-width:thin}
 }
 .sp-body strong{font-size:.93rem;display:block;margin-bottom:.2rem}
 .sp-body p{font-size:.85rem;color:var(--ink-soft);line-height:1.65}
-.sp-arrow{text-align:center;color:var(--sage);font-size:1.1rem;padding:.05rem 0 .05rem 1.7rem}
+.sp-arrow{
+  padding:.05rem 0 .05rem 1.65rem;color:transparent;font-size:0;
+  display:flex;align-items:center;min-height:1.4rem;
+}
+.sp-arrow::before{
+  content:"";display:block;width:2px;height:1.4rem;
+  border-left:2px dashed var(--sage);margin-left:.55rem;
+}
 
 /* 구매 팁 */
 .pick-tips{list-style:none;display:flex;flex-direction:column;gap:1rem}
 .pick-tips li{display:flex;gap:.85rem;align-items:flex-start}
 .pt-mark{
-  flex:0 0 auto;min-width:2.8rem;padding:.28em .5em;border-radius:999px;
-  background:var(--cream);color:var(--sage-d);border:1.5px solid var(--sage);
-  font-size:.76rem;font-weight:800;text-align:center;margin-top:.1rem;white-space:nowrap;
+  flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;
+  background:var(--gold);color:#fff;border:none;
+  font-size:.72rem;font-weight:800;text-align:center;margin-top:.1rem;
+  display:flex;align-items:center;justify-content:center;white-space:nowrap;
 }
 .pick-tips li strong{font-size:.92rem;display:block;margin-bottom:.25rem}
 .pick-tips li p{font-size:.85rem;color:var(--ink-soft);line-height:1.65}
@@ -832,3 +841,30 @@ html{scrollbar-width:thin}
   .drawer-step::before{width:15px;height:15px;font-size:.55rem}
   .checkout-foot .btn{padding-inline:.65rem;font-size:.83rem}
 }
+
+/* ============================================================
+   구매 가이드 스크롤 진입 애니메이션
+   ============================================================ */
+@keyframes rowSlideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+@keyframes tipReveal{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.guide-card.in .bunch-tbl tbody tr:nth-child(1){animation:rowSlideIn .4s ease .1s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(2){animation:rowSlideIn .4s ease .2s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(3){animation:rowSlideIn .4s ease .3s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(4){animation:rowSlideIn .4s ease .4s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(5){animation:rowSlideIn .4s ease .5s both}
+.guide-card.in .pick-tips li:nth-child(1){animation:tipReveal .45s ease .08s both}
+.guide-card.in .pick-tips li:nth-child(2){animation:tipReveal .45s ease .2s both}
+.guide-card.in .pick-tips li:nth-child(3){animation:tipReveal .45s ease .32s both}
+.guide-card.in .sp-step:nth-child(1){animation:tipReveal .4s ease .05s both}
+.guide-card.in .sp-arrow{animation:tipReveal .3s ease .25s both}
+.guide-card.in .sp-step:nth-child(3){animation:tipReveal .4s ease .4s both}
+
+/* ============================================================
+   지난번 주문 힌트 (장바구니 빈 상태)
+   ============================================================ */
+.last-order-hint{margin-top:.9rem;padding:.9rem 1rem;background:var(--cream);border-radius:12px;border:1px solid var(--line)}
+.last-order-hint[hidden]{display:none}
+.loh-title{font-size:.72rem;font-weight:700;color:var(--ink-soft);letter-spacing:.04em;margin-bottom:.45rem}
+.loh-items{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.7rem}
+.loh-chip{font-size:.78rem;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:.2em .65em;color:var(--ink);line-height:1.4}
+.loh-readd{font-size:.82rem;padding:.5em 1.1em;width:100%}
