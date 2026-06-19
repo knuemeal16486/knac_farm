@@ -929,3 +929,20 @@ html{scrollbar-width:thin}
 .loh-items{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.7rem}
 .loh-chip{font-size:.78rem;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:.2em .65em;color:var(--ink);line-height:1.4}
 .loh-readd{font-size:.82rem;padding:.5em 1.1em;width:100%}
+
+/* ── 모바일 컴팩트 레이아웃 ── */
+@media(max-width:819px){
+  .story,.values,.growth,.guide,.products,.visit{padding-top:2rem;padding-bottom:2rem}
+  .section-head{margin-bottom:1.2rem}
+  .trust-item{padding:.7rem .4rem}
+  .values-grid{grid-template-columns:repeat(2,1fr);gap:.65rem}
+  .value-card{padding:.9rem .8rem}
+  .value-title{font-size:.88rem}
+  .value-desc{font-size:.75rem}
+  .guide-inner{gap:.75rem}
+  .guide-card{padding:.9rem .85rem}
+  .gc-eyebrow-sm{display:none}
+  .growth-dots{margin-bottom:.85rem}
+  .card-img{aspect-ratio:4/3}
+  .visit-map{margin-top:.75rem}
+}
