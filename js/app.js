@@ -864,7 +864,7 @@
 
   /* ---------- 7. 스크롤 등장 ---------- */
   function setupReveal() {
-    const targets = $$(".trust-item, .story, .section-head, .g-card, .value-card, .card, .visit-info");
+    const targets = $$(".trust-item, .story, .section-head, .g-card, .value-card, .guide-card, .card, .visit-info");
     targets.forEach((t) => t.classList.add("reveal"));
     if (!("IntersectionObserver" in window)) {
       targets.forEach((t) => t.classList.add("in"));

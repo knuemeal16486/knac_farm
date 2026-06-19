@@ -746,6 +746,86 @@ html{scrollbar-width:thin}
 .cc-actions{display:flex;gap:.7rem}
 .cc-actions .btn{flex:1}
 
+/* ============================================================
+   구매 가이드 섹션
+   ============================================================ */
+.guide{padding:clamp(4rem,8vw,6.5rem) clamp(1.1rem,4vw,2.8rem)}
+.guide-inner{
+  max-width:var(--maxw);margin:0 auto;
+  display:grid;gap:1.4rem;grid-template-columns:1fr;
+}
+@media(min-width:820px){.guide-inner{grid-template-columns:1fr 1fr}}
+.guide-card{
+  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--rad);
+  padding:1.7rem 1.6rem;display:flex;flex-direction:column;gap:.9rem;
+  transition:.22s ease;
+}
+.guide-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.gc-head{display:flex;align-items:center;gap:.75rem}
+.gc-icon{
+  flex:0 0 40px;width:40px;height:40px;border-radius:12px;
+  background:var(--sage-d);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:800;letter-spacing:-.02em;
+  font-family:var(--serif);text-align:center;line-height:1.1;
+}
+.guide-card h3{font-family:var(--serif);font-size:1.15rem;font-weight:700;line-height:1.3}
+.gc-desc{font-size:.9rem;color:var(--ink-soft);line-height:1.65}
+.gc-note{
+  font-size:.8rem;color:var(--sage-d);background:rgba(143,166,106,.08);
+  border-left:3px solid var(--sage);padding:.55rem .85rem;border-radius:0 8px 8px 0;
+  line-height:1.65;margin-top:auto;
+}
+
+/* 당도 비교 바 */
+.brix-cmp{display:flex;flex-direction:column;gap:.6rem}
+.bcmp-row{display:grid;grid-template-columns:6.2rem 1fr 3rem;align-items:center;gap:.7rem}
+.bcmp-label{font-size:.8rem;font-weight:600;color:var(--ink-soft);text-align:right}
+.bcmp-track{height:10px;background:var(--cream);border-radius:999px;overflow:hidden}
+.bcmp-bar{
+  height:100%;width:0;background:var(--line);border-radius:inherit;
+  transition:width 1s cubic-bezier(.4,0,.2,1);
+}
+.guide-card.in .bcmp-bar{width:var(--w,0)}
+.bcmp-row.bcmp-hl .bcmp-label{color:var(--sage-d);font-weight:700}
+.bcmp-row.bcmp-hl .bcmp-bar{background:linear-gradient(90deg,var(--sage),var(--sage-d))}
+.bcmp-row.bcmp-hl .bcmp-val{color:var(--sage-d);font-weight:800}
+.bcmp-val{font-size:.8rem;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+
+/* 송이 무게 표 */
+.bunch-tbl{width:100%;border-collapse:collapse;font-size:.87rem}
+.bunch-tbl th{
+  text-align:left;font-size:.75rem;font-weight:700;color:var(--ink-soft);letter-spacing:.03em;
+  padding:.5rem .6rem;border-bottom:1.5px solid var(--line);
+}
+.bunch-tbl td{padding:.52rem .6rem;border-bottom:1px solid var(--line);line-height:1.5;color:var(--ink)}
+.bunch-tbl tbody tr:last-child td{border-bottom:none}
+.bunch-tbl .bw{font-weight:700;color:var(--sage-d);white-space:nowrap}
+@media(max-width:599px){.bunch-tbl th:last-child,.bunch-tbl td:last-child{display:none}}
+
+/* 선별 과정 */
+.sel-process{display:flex;flex-direction:column;gap:.35rem}
+.sp-step{display:flex;gap:.85rem;align-items:flex-start}
+.sp-n{
+  flex:0 0 auto;padding:.28em .65em;border-radius:999px;
+  background:var(--sage-d);color:#fff;font-size:.76rem;font-weight:800;
+  text-align:center;margin-top:.15rem;white-space:nowrap;
+}
+.sp-body strong{font-size:.93rem;display:block;margin-bottom:.2rem}
+.sp-body p{font-size:.85rem;color:var(--ink-soft);line-height:1.65}
+.sp-arrow{text-align:center;color:var(--sage);font-size:1.1rem;padding:.05rem 0 .05rem 1.7rem}
+
+/* 구매 팁 */
+.pick-tips{list-style:none;display:flex;flex-direction:column;gap:1rem}
+.pick-tips li{display:flex;gap:.85rem;align-items:flex-start}
+.pt-mark{
+  flex:0 0 auto;min-width:2.8rem;padding:.28em .5em;border-radius:999px;
+  background:var(--cream);color:var(--sage-d);border:1.5px solid var(--sage);
+  font-size:.76rem;font-weight:800;text-align:center;margin-top:.1rem;white-space:nowrap;
+}
+.pick-tips li strong{font-size:.92rem;display:block;margin-bottom:.25rem}
+.pick-tips li p{font-size:.85rem;color:var(--ink-soft);line-height:1.65}
+
 /* 360px 미만 초소형 화면: 드로어 진행 표시 & 결제 버튼 축소 */
 @media(max-width:359px){
   .drawer-steps{font-size:.63rem;padding:.5rem .7rem}
