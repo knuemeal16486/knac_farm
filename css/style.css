@@ -827,68 +827,24 @@ html{scrollbar-width:thin}
 .pick-tips{list-style:none;display:flex;flex-direction:column;gap:1rem}
 .pick-tips li{display:flex;gap:.85rem;align-items:flex-start}
 
-/* 색상 비교 — 큰 패널형 */
-.color-cmp{
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  align-items:center;
-  gap:.6rem;
-  margin:.9rem 0 .2rem;
+/* 색상 비교 — 그라디언트 바 */
+.color-cmp{margin:.8rem 0 .15rem}
+.cmp-track{
+  position:relative;height:40px;border-radius:8px;
+  background:linear-gradient(to right,#7BF00E 0%,#A8F00E 100%);
 }
-.cs-panel{
-  border-radius:12px;overflow:hidden;
-  border:2px solid transparent;
-  box-shadow:0 2px 10px rgba(0,0,0,.07);
+.cmp-marker{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:16px;height:16px;border-radius:50%;
+  background:#fff;border:2.5px solid var(--sage-d);
+  box-shadow:0 1px 4px rgba(0,0,0,.15);
 }
-.cs-panel-ripe{
-  border-color:var(--sage-d);
-  box-shadow:0 4px 18px -4px rgba(95,122,64,.3);
+.cmp-labels{
+  display:flex;justify-content:space-between;
+  margin-top:.35rem;padding:0 .15rem;
 }
-.cs-block{
-  position:relative;height:108px;
-  display:flex;align-items:flex-end;justify-content:center;
-  overflow:hidden;padding-bottom:.55rem;
-}
-.cs-grape{
-  position:absolute;width:90px;height:auto;
-  bottom:-12px;right:-8px;pointer-events:none;
-}
-.cs-stage-label{
-  position:relative;z-index:1;
-  font-size:.65rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-  background:rgba(0,0,0,.22);color:#fff;
-  padding:2px 8px;border-radius:20px;
-  backdrop-filter:blur(4px);
-}
-.cs-ripe-badge{
-  position:absolute;top:8px;right:8px;z-index:2;
-  background:var(--sage-d);color:#fff;
-  font-size:.7rem;font-weight:800;letter-spacing:.02em;
-  padding:3px 10px;border-radius:20px;
-  box-shadow:0 2px 8px rgba(95,122,64,.4);
-}
-.cs-caption{
-  display:flex;flex-direction:column;align-items:center;gap:.2rem;
-  padding:.55rem .4rem .5rem;
-  background:var(--cream);
-}
-.cs-chip{
-  display:block;width:1.6rem;height:1.6rem;border-radius:50%;
-  box-shadow:inset -4px -4px 8px rgba(0,0,0,.13),inset 3px 3px 6px rgba(255,255,255,.6);
-}
-.cs-cname{font-size:.78rem;font-weight:700;color:var(--ink-soft)}
-.cs-cname-ripe{color:var(--sage-d)}
-.cs-cstatus{font-size:.66rem;color:#aaa}
-.cs-cstatus-ripe{color:var(--sage-d);font-weight:700}
-/* 가운데 스펙트럼 컬럼 */
-.cs-spectrum-col{
-  display:flex;flex-direction:column;align-items:center;gap:.4rem;
-  color:var(--ink-soft);
-}
-.cs-spectrum-bar{
-  width:6px;height:60px;border-radius:3px;
-  background:linear-gradient(to bottom,#7BF00E,#A8F00E);
-}
+.cmp-l-unripe{font-size:.68rem;color:#aaa}
+.cmp-l-ripe{font-size:.68rem;font-weight:700;color:var(--sage-d)}
 .pt-mark{
   flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;
   background:var(--gold);color:#fff;border:none;
