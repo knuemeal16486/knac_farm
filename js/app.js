@@ -20,12 +20,12 @@
   /* 장바구니 영속화 (localStorage 불가 환경에서도 동작) */
   const store = {
     read() {
-      try { return JSON.parse(localStorage.getItem("smc_cart") || "[]"); }
+      try { return JSON.parse(sessionStorage.getItem("smc_cart") || "[]"); }
       catch { return mem; }
     },
     write(v) {
       mem = v;
-      try { localStorage.setItem("smc_cart", JSON.stringify(v)); } catch {}
+      try { sessionStorage.setItem("smc_cart", JSON.stringify(v)); } catch {}
     },
   };
   let mem = [];
@@ -92,8 +92,8 @@
     const mapEl = $("#visit-map");
     if (mapEl) {
       const iframeSrc = hasCoord
-        ? `https://map.naver.com/v5/embed?type=place&lat=${FARM.lat}&lng=${FARM.lng}&zoom=16&title=${encodeURIComponent(FARM.name)}`
-        : `https://map.naver.com/v5/search/${encodeURIComponent(FARM.mapQuery || FARM.address)}`;
+        ? `https://maps.google.com/maps?q=${FARM.lat},${FARM.lng}&z=16&output=embed&hl=ko`
+        : `https://maps.google.com/maps?q=${encodeURIComponent(FARM.mapQuery || FARM.address)}&output=embed&hl=ko`;
       mapEl.innerHTML = `<iframe title="${FARM.name} 위치" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="${iframeSrc}"></iframe>`;
       mapEl.removeAttribute("aria-hidden");
     }
@@ -462,7 +462,7 @@
           <span class="g-date">${g.date}</span>
           <h3 class="g-title">${g.title}</h3>
           <p class="g-desc">${g.desc}</p>
-          ${g.farmerNote ? `<blockquote class="g-farmer-note">"${g.farmerNote}" — ${FARMER.name}</blockquote>` : ""}
+          ${g.farmerNote ? `<blockquote class="g-farmer-note">"${g.farmerNote}"</blockquote>` : ""}
         </div>
       </article>`).join("");
 
@@ -520,6 +520,19 @@
       </li>`).join("");
     const has = cart.length > 0;
     empty.style.display = has ? "none" : "block";
+    const hint = $("#last-order-hint");
+    if (hint) {
+      if (!has) {
+        try {
+          const last = JSON.parse(localStorage.getItem("knac_last_order") || "null");
+          if (last && Array.isArray(last) && last.length) {
+            const chips = last.map((c) => `<span class="loh-chip">${c.name} · ${optText(c.opt)}</span>`).join("");
+            hint.innerHTML = `<p class="loh-title">지난번 주문</p><div class="loh-items">${chips}</div><button class="btn btn-ghost loh-readd" data-readd="1">다시 담기 →</button>`;
+            hint.hidden = false;
+          } else { hint.hidden = true; }
+        } catch { hint.hidden = true; }
+      } else { hint.hidden = true; }
+    }
     $("#cart-total").textContent = won(itemTotal());
     $("#go-checkout").disabled = !has;
   }
@@ -814,6 +827,7 @@
     oldBtn.replaceWith(newBtn);
     newBtn.addEventListener("click", confirmSent);
 
+    try { if (cart.length) localStorage.setItem("knac_last_order", JSON.stringify(cart)); } catch {}
     cart = [];
     persist();
     showView("done");
@@ -873,7 +887,7 @@
     const io = new IntersectionObserver((es) => {
       es.forEach((en) => en.isIntersecting && (en.target.classList.add("in"), io.unobserve(en.target)));
     }, { threshold: 0.12 });
-    targets.forEach((t) => io.observe(t));
+    requestAnimationFrame(() => requestAnimationFrame(() => targets.forEach((t) => io.observe(t))));
   }
 
   /* ---------- 7.5 인터랙션 (전환·스크롤스파이·라이트박스 등) ---------- */
@@ -936,7 +950,7 @@
         nums.forEach(animateCount);
         io.disconnect();
       });
-    }, { threshold: 0.4 });
+    }, { threshold: 0.4, rootMargin: "0px 0px -10% 0px" });
     io.observe(sec);
   }
 
@@ -1032,7 +1046,7 @@
   /* ---------- 8. 이벤트 바인딩 ---------- */
   function bind() {
     document.addEventListener("click", (e) => {
-      const t = e.target.closest("[data-inc],[data-dec],[data-rm],[data-grp],[data-pq],[data-jq],#pdp-add,#pdp-order,#juice-add");
+      const t = e.target.closest("[data-inc],[data-dec],[data-rm],[data-grp],[data-pq],[data-jq],[data-readd],#pdp-add,#pdp-order,#juice-add");
       if (!t) return;
       if (t.id === "pdp-add") addCurrentToCart();
       else if (t.id === "juice-add") addJuiceToCart();
@@ -1043,6 +1057,12 @@
       else if (t.dataset.inc) setQty(t.dataset.inc, 1);
       else if (t.dataset.dec) setQty(t.dataset.dec, -1);
       else if (t.dataset.rm) removeItem(t.dataset.rm);
+      else if (t.dataset.readd) {
+        try {
+          const last = JSON.parse(localStorage.getItem("knac_last_order") || "null");
+          if (last && Array.isArray(last) && last.length) { last.forEach((c) => addLine({ ...c })); toast("지난번 주문을 다시 담았습니다"); }
+        } catch {}
+      }
     });
 
     // 담기 전 옵션 확인 모달
@@ -1123,4 +1143,9 @@
   setupHeroParallax();
   setupToTop();
   setupLightbox();
+  window.addEventListener("pageshow", (e) => {
+    if (!e.persisted) return;
+    $$(".stat-num[data-to]").forEach(animateCount);
+    countUpBrix();
+  });
 })();
