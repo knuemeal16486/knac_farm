@@ -288,7 +288,7 @@ section{scroll-margin-top:64px}
 #go-checkout{margin-top:.15rem}
 .checkout-foot{display:flex;gap:.7rem;margin-top:auto}
 .checkout-foot .btn{flex:1}
-.done-mark{width:56px;height:56px;border-radius:50%;background:var(--sage);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:800;margin:0 auto .8rem}
+.done-mark{width:56px;height:56px;border-radius:50%;background:var(--sage);color:var(--ink);display:flex;align-items:center;justify-content:center;margin:0 auto .8rem}
 #done-view h4{font-family:var(--serif);font-size:1.4rem;text-align:center}
 .done-desc{text-align:center;color:var(--ink-soft);font-size:.9rem;margin:.5rem 0 1.2rem}
 .done-sub{text-align:center;color:var(--ink-soft);font-size:.88rem;margin:.4rem 0 1.4rem}
