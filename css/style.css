@@ -18,6 +18,8 @@
   --sans:"Pretendard","Pretendard Variable",system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+body{-webkit-user-select:none;user-select:none}
+input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text}
 html{scroll-behavior:smooth}
 body{
   font-family:var(--sans);color:var(--ink);background:var(--paper);
