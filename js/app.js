@@ -176,15 +176,16 @@
       `<div class="stat"><span class="stat-num" data-to="${s.to}" data-suffix="${s.suffix}">0</span><span class="stat-label">${s.label}</span></div>`
     ).join("");
   }
-  function animateCount(el) {
+  function animateCount(el, onDone) {
     const to = Number(el.dataset.to) || 0;
     const suf = el.dataset.suffix || "";
-    if (reduceMotion() || !to) { el.textContent = to + suf; return; }
+    if (reduceMotion() || !to) { el.textContent = to + suf; if (onDone) onDone(); return; }
     const dur = 1200, t0 = performance.now();
     const tick = (t) => {
       const p = Math.min((t - t0) / dur, 1);
       el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * to) + suf;
       if (p < 1) requestAnimationFrame(tick);
+      else if (onDone) onDone();
     };
     requestAnimationFrame(tick);
   }
@@ -218,6 +219,7 @@
         <div class="card-img" id="pdp-img">
           <span class="grade-tag">${PRODUCT.grade}</span>
           ${grapeSVG}
+          <div class="pdp-opt-badge" id="pdp-opt-badge"></div>
         </div>
       </div>
       <div class="pdp-info">
@@ -255,6 +257,7 @@
     if (juiceOn()) mountImage($("#juice-img"), JUICE.image, JUICE.name, true);
     renderOptions();
     updatePrice();
+    updateOptionBadge();
     renderPdpSelected();
   }
 
@@ -313,6 +316,15 @@
     else if (grp === "wrap") sel.wrapIdx = i;
     renderOptions();
     updatePrice();
+    updateOptionBadge();
+  }
+
+  function updateOptionBadge() {
+    const badge = $("#pdp-opt-badge");
+    if (!badge) return;
+    const w = curWeight().label;
+    const b = curWeight().bunches[sel.bunchIdx];
+    badge.textContent = `${w} · ${b}`;
   }
 
   function setPdpQty(d) {
@@ -754,9 +766,15 @@
     if (!cart.length) { toast("장바구니가 비어 있습니다"); showView("cart"); return; }
     const form = e.target;
     const fd = new FormData(form);
+    const name = (fd.get("name") || "").trim();
+    if (name.length < 2) {
+      toast("받으시는 분 성함을 작성해 주세요 :)");
+      form.elements.namedItem("name").focus();
+      return;
+    }
     const phone = fd.get("phone") || "";
     if (digits(phone).length < 10) {
-      toast("연락처를 올바르게 입력해 주세요 (10자리 이상)");
+      toast("연락처를 올바르게 입력해 주세요 :)");
       form.elements.namedItem("phone").focus();
       return;
     }
@@ -960,11 +978,15 @@
     if (!sec) return;
     const nums = $$(".stat-num", sec);
     if (!("IntersectionObserver" in window)) { nums.forEach(animateCount); return; }
+    let running = false;
     const io = new IntersectionObserver((es) => {
       es.forEach((en) => {
-        if (!en.isIntersecting) return;
-        nums.forEach(animateCount);
-        io.disconnect();
+        if (en.isIntersecting && !running) {
+          running = true;
+          nums.forEach((el) => { el.textContent = "0" + (el.dataset.suffix || ""); });
+          let done = 0;
+          nums.forEach((el) => animateCount(el, () => { if (++done === nums.length) running = false; }));
+        }
       });
     }, { threshold: 0.4, rootMargin: "0px 0px -10% 0px" });
     io.observe(sec);
@@ -995,7 +1017,7 @@
       return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
     }
     function interpolateColor(pct) {
-      const stops = ["#7BF00E", "#A8F00E", "#E1F00E"];
+      const stops = ["#7BF00E", "#A8F00E", "#E6EB10"];
       const seg = pct <= 50 ? 0 : 1;
       const t   = pct <= 50 ? pct / 50 : (pct - 50) / 50;
       const [r1, g1, b1] = hexToRgb(stops[seg]);
@@ -1021,7 +1043,10 @@
     }
 
     range.addEventListener("input", update);
-    range.addEventListener("input", () => { $("#cmp-hint")?.remove(); }, { once: true });
+    range.addEventListener("input", () => {
+      $("#cmp-hint")?.remove();
+      thumb.classList.add("cmp-thumb--touched");
+    }, { once: true });
     update();
   }
 
