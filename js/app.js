@@ -77,7 +77,7 @@
     pl.href = "tel:" + digits(FARM.phone);
     document.title = FARM.name + " · 산지직송";
 
-    $("[data-farmer-name]").textContent = FARMER.name;
+    $$("[data-farmer-name]").forEach((e) => (e.textContent = FARMER.name));
     $("[data-farmer-years]").textContent = FARMER.years ? `· 경력 ${FARMER.years}년` : "";
     $("[data-farmer-letter]").textContent = FARMER.letter;
     mountImage($('[data-photo="farmer"]'), FARMER.photo, FARMER.name + " 농부", true);
@@ -534,6 +534,38 @@
       if (saved.addr)  { form.elements.namedItem("address").value = saved.addr; filled = true; }
       if (filled && hint) hint.textContent = "이전에 입력하신 정보를 불러왔습니다. 확인 후 주문해 주세요.";
     } catch {}
+    setupFormProgress();
+  }
+
+  function setupFormProgress() {
+    const form = $("#checkout-view");
+    const bar = $("#form-progress-bar");
+    if (!form || !bar || form.dataset.progressInit) return;
+    form.dataset.progressInit = "1";
+
+    const updateProgress = () => {
+      const f = new FormData(form);
+      const name = (f.get("name") || "").trim();
+      const phone = digits(f.get("phone") || "");
+      const isDelivery = f.get("method") !== "농장 직접수령";
+      const addr = (f.get("address") || "").trim();
+      const total = isDelivery ? 3 : 2;
+      let filled = 0;
+      if (name.length >= 2) filled++;
+      if (phone.length >= 9) filled++;
+      if (!isDelivery || addr.length >= 5) filled++;
+      bar.style.width = `${Math.round((filled / total) * 100)}%`;
+    };
+
+    form.querySelectorAll("input:not([type=radio])").forEach(inp => {
+      inp.addEventListener("blur", () => {
+        inp.classList.toggle("is-valid", inp.value.trim().length > 0);
+      });
+    });
+
+    form.addEventListener("input", updateProgress);
+    form.addEventListener("change", updateProgress);
+    updateProgress();
   }
 
   /* ---------- 5. 주문 처리 ---------- */
