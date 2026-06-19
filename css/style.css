@@ -271,7 +271,8 @@ section{scroll-margin-top:64px}
 .qty{display:flex;align-items:center;gap:.5rem;margin-top:.4rem}
 .qty button{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:var(--paper);font-size:1rem;cursor:pointer;line-height:1}
 .qty span{min-width:1.5em;text-align:center;font-weight:700}
-.ci-remove{background:none;border:none;color:var(--ink-soft);font-size:.78rem;cursor:pointer;text-decoration:underline}
+/* 삭제 버튼은 텍스트라 .qty button의 고정 크기(26/34px)를 받으면 안 됨 → auto */
+.qty .ci-remove{width:auto;height:auto;flex:0 0 auto;background:none;border:none;color:var(--ink-soft);font-size:.78rem;cursor:pointer;text-decoration:underline;padding:.15rem .3rem;margin-left:.15rem;white-space:nowrap}
 .cart-foot{
   background:var(--paper-2);
   padding:.9rem 1.4rem 1.3rem;
