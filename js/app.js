@@ -670,7 +670,31 @@
   }
 
   /* ---------- 5. 주문 처리 ---------- */
-  function buildSummary(form) {
+  // 전화번호별 주문 횟수를 이 기기에 기록 (로그인 없이 재주문/단골 인식)
+  let lastOrder = { repeat: false, count: 0, name: "" };
+
+  function orderHistory() {
+    try { return JSON.parse(localStorage.getItem("knac_history") || "{}"); } catch { return {}; }
+  }
+  function priorOrderCount(phoneDigits) {
+    if (!phoneDigits) return 0;
+    const rec = orderHistory()[phoneDigits];
+    return (rec && rec.count) || 0;
+  }
+  function recordOrder(phoneDigits, name) {
+    if (!phoneDigits) return;
+    try {
+      const h = orderHistory();
+      const rec = h[phoneDigits] || { count: 0 };
+      rec.count += 1;
+      rec.name = name || rec.name || "";
+      rec.last = new Date().toISOString().slice(0, 10);
+      h[phoneDigits] = rec;
+      localStorage.setItem("knac_history", JSON.stringify(h));
+    } catch {}
+  }
+
+  function buildSummary(form, opts = {}) {
     const f = new FormData(form);
     const method = f.get("method");
     const lines = cart.map((c) =>
@@ -693,6 +717,7 @@
       `수령: ${method}`,
       method === "택배" ? `주소: ${fullAddress(f)}` : null,
       f.get("memo") ? `요청사항: ${f.get("memo")}` : null,
+      opts.repeat ? `🎁 재주문 고객 (${opts.orderNo}번째 주문) · 단골 덤 부탁드립니다` : null,
       ``,
       `잘 부탁드립니다. 감사합니다!`,
     ].filter(Boolean).join("\n");
@@ -717,7 +742,14 @@
     }
     const submitBtn = form.querySelector('[type="submit"]');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "처리 중…"; }
-    const summary = buildSummary(form);
+
+    // 재주문 여부 판단 (이 기기 기록 기준) — 기록 증가 전에 이전 횟수 확인
+    const phoneDigits = digits(phone);
+    const buyerName = (fd.get("name") || "").trim();
+    const orderNo = priorOrderCount(phoneDigits) + 1;   // 이번이 N번째 주문
+    const repeat = orderNo >= 2;                          // 2번째 이상 = 단골
+    lastOrder = { repeat, count: orderNo, name: buyerName };
+    const summary = buildSummary(form, { repeat, orderNo });
 
     // SMS 자동 열기 — form submit(사용자 제스처) 체인 안에서 동기적으로 실행
     const smsA = document.createElement("a");
@@ -736,6 +768,9 @@
         addrDetail: fd.get("addressDetail") || "",
       }));
     } catch {}
+
+    // 이번 주문을 기기 기록에 반영 (다음 주문부터 재주문으로 인식)
+    recordOrder(phoneDigits, buyerName);
 
     // (A) 폼 엔드포인트가 있으면 이메일 자동 전송 시도
     if (CONFIG.formEndpoint) {
@@ -789,6 +824,20 @@
     $("#order-confirmed").hidden = false;
     // Phase 2의 data-farmer-name 동기화 (hydrate 이후이므로 직접 채움)
     $$("[data-farmer-name]").forEach((e) => (e.textContent = FARMER.name));
+
+    // 단골(재주문) 고객 감사 인사 + 덤 안내
+    const note = $("#repeat-note");
+    if (note) {
+      if (lastOrder.repeat) {
+        const who = lastOrder.name ? `${lastOrder.name}님, ` : "";
+        note.innerHTML =
+          `🎁 <strong>${who}다시 찾아주셔서 감사합니다!</strong>` +
+          `<span class="repeat-sub">${lastOrder.count}번째 주문이에요. 단골 고객님께 작은 덤을 함께 담아 보내드릴게요.</span>`;
+        note.hidden = false;
+      } else {
+        note.hidden = true;
+      }
+    }
   }
 
   /* ---------- 장바구니 담김 확인 ---------- */
