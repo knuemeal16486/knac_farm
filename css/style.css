@@ -827,25 +827,68 @@ html{scrollbar-width:thin}
 .pick-tips{list-style:none;display:flex;flex-direction:column;gap:1rem}
 .pick-tips li{display:flex;gap:.85rem;align-items:flex-start}
 
-/* 색상 비교 스와치 */
+/* 색상 비교 — 큰 패널형 */
 .color-cmp{
-  display:flex;align-items:center;gap:1rem;
-  margin:.75rem 0 .15rem;padding:.8rem 1rem;
-  background:var(--cream);border-radius:10px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:.6rem;
+  margin:.9rem 0 .2rem;
 }
-.color-swatch{display:flex;flex-direction:column;align-items:center;gap:.35rem;flex:1}
-.cs-ball{
-  display:block;width:3rem;height:3rem;border-radius:50%;
-  box-shadow:inset -5px -5px 10px rgba(0,0,0,.13),inset 3px 3px 7px rgba(255,255,255,.55);
+.cs-panel{
+  border-radius:12px;overflow:hidden;
+  border:2px solid transparent;
+  box-shadow:0 2px 10px rgba(0,0,0,.07);
 }
-.cs-ball-pick{
-  outline:2.5px solid var(--sage-d);outline-offset:2px;
+.cs-panel-ripe{
+  border-color:var(--sage-d);
+  box-shadow:0 4px 18px -4px rgba(95,122,64,.3);
 }
-.cs-label{font-size:.76rem;font-weight:700;color:var(--ink-soft);text-align:center}
-.cs-label-pick{color:var(--sage-d)}
-.cs-sub{font-size:.68rem;color:var(--ink-soft);text-align:center}
-.cs-sub-pick{color:var(--sage-d);font-weight:700}
-.cs-arrow{color:var(--ink-soft);font-size:1.1rem;flex:0 0 auto}
+.cs-block{
+  position:relative;height:108px;
+  display:flex;align-items:flex-end;justify-content:center;
+  overflow:hidden;padding-bottom:.55rem;
+}
+.cs-grape{
+  position:absolute;width:90px;height:auto;
+  bottom:-12px;right:-8px;pointer-events:none;
+}
+.cs-stage-label{
+  position:relative;z-index:1;
+  font-size:.65rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  background:rgba(0,0,0,.22);color:#fff;
+  padding:2px 8px;border-radius:20px;
+  backdrop-filter:blur(4px);
+}
+.cs-ripe-badge{
+  position:absolute;top:8px;right:8px;z-index:2;
+  background:var(--sage-d);color:#fff;
+  font-size:.7rem;font-weight:800;letter-spacing:.02em;
+  padding:3px 10px;border-radius:20px;
+  box-shadow:0 2px 8px rgba(95,122,64,.4);
+}
+.cs-caption{
+  display:flex;flex-direction:column;align-items:center;gap:.2rem;
+  padding:.55rem .4rem .5rem;
+  background:var(--cream);
+}
+.cs-chip{
+  display:block;width:1.6rem;height:1.6rem;border-radius:50%;
+  box-shadow:inset -4px -4px 8px rgba(0,0,0,.13),inset 3px 3px 6px rgba(255,255,255,.6);
+}
+.cs-cname{font-size:.78rem;font-weight:700;color:var(--ink-soft)}
+.cs-cname-ripe{color:var(--sage-d)}
+.cs-cstatus{font-size:.66rem;color:#aaa}
+.cs-cstatus-ripe{color:var(--sage-d);font-weight:700}
+/* 가운데 스펙트럼 컬럼 */
+.cs-spectrum-col{
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  color:var(--ink-soft);
+}
+.cs-spectrum-bar{
+  width:6px;height:60px;border-radius:3px;
+  background:linear-gradient(to bottom,#7BF00E,#A8F00E);
+}
 .pt-mark{
   flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;
   background:var(--gold);color:#fff;border:none;
