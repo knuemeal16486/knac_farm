@@ -649,12 +649,12 @@
 
   function showDone(summary) {
     $("#order-summary").textContent = summary;
-    $("#done-desc").textContent = `문자 앱이 열렸습니다. 전송하시면 농부 ${FARMER.name}이 직접 확인하고 연락드리겠습니다. 앱이 열리지 않았다면 아래 버튼을 눌러주세요.`;
+    $("#done-desc").textContent = `장바구니 내용이 담긴 문자를 확인하고 전송해 주세요. 앱이 열리지 않았다면 아래 버튼을 눌러주세요.`;
 
     const tel = digits(FARM.phone);
     const body = encodeURIComponent(summary);
     const actions = [
-      `<a class="btn btn-primary full" href="sms:${tel}?&body=${body}">📱 문자 다시 열기</a>`,
+      `<a class="btn btn-ghost full" href="sms:${tel}?&body=${body}">📱 문자 다시 열기</a>`,
       CONFIG.kakaoUrl ? `<a class="btn btn-ghost full" target="_blank" rel="noopener" href="${CONFIG.kakaoUrl}">카카오톡 상담</a>` : "",
       `<a class="btn btn-ghost full" href="tel:${tel}">📞 전화 주문 (${FARM.phone})</a>`,
       `<button class="btn btn-ghost full" id="copy-order" type="button">주문 내용 복사</button>`,
@@ -666,9 +666,26 @@
       catch { toast("복사 실패 — 길게 눌러 복사하세요"); }
     });
 
+    // Phase 1 표시, Phase 2 숨김
+    $("#sms-pending").hidden = false;
+    $("#order-confirmed").hidden = true;
+
+    // "보냈어요" 버튼 — 중복 이벤트 방지를 위해 새 노드로 교체
+    const oldBtn = $("#confirm-sent");
+    const newBtn = oldBtn.cloneNode(true);
+    oldBtn.replaceWith(newBtn);
+    newBtn.addEventListener("click", confirmSent);
+
     cart = [];
     persist();
     showView("done");
+  }
+
+  function confirmSent() {
+    $("#sms-pending").hidden = true;
+    $("#order-confirmed").hidden = false;
+    // Phase 2의 data-farmer-name 동기화 (hydrate 이후이므로 직접 채움)
+    $$("[data-farmer-name]").forEach((e) => (e.textContent = FARMER.name));
   }
 
   /* ---------- 장바구니 담김 확인 ---------- */

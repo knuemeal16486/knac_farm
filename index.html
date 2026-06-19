@@ -198,10 +198,8 @@
 
     <!-- 1단계: 담은 상품 -->
     <div class="drawer-body" id="cart-view">
-      <div class="cart-scroll">
-        <ul class="cart-items" id="cart-items"></ul>
-        <p class="cart-empty" id="cart-empty">담긴 상품이 없습니다.</p>
-      </div>
+      <ul class="cart-items" id="cart-items"></ul>
+      <p class="cart-empty" id="cart-empty">담긴 상품이 없습니다.</p>
       <div class="cart-foot">
         <div class="cart-summary">
           <div class="row"><span>상품 합계</span><strong id="cart-total">0원</strong></div>
@@ -266,17 +264,30 @@
 
     <!-- 4단계: 완료 -->
     <div class="drawer-body" id="done-view" hidden>
-      <div class="done-mark" aria-hidden="true">🍇</div>
-      <h4>주문이 접수되었습니다!</h4>
-      <p class="done-desc" id="done-desc"></p>
-      <pre class="order-summary" id="order-summary"></pre>
-      <div class="done-actions" id="done-actions"></div>
-      <div class="bank-box">
-        <p class="bank-label">입금 계좌</p>
-        <p class="bank-acc" id="bank-acc"></p>
-        <p class="bank-hint">주문 확인 후 안내드린 금액을 입금해 주세요.</p>
+
+      <!-- Phase 1: 문자 전송 대기 -->
+      <div id="sms-pending">
+        <div class="done-mark" aria-hidden="true">💬</div>
+        <h4>문자 앱이 열렸습니다</h4>
+        <p class="done-desc" id="done-desc">장바구니 내용이 담긴 문자를 확인하고 전송해 주세요.</p>
+        <pre class="order-summary" id="order-summary"></pre>
+        <div class="done-actions" id="done-actions"></div>
+        <button class="btn btn-primary full" id="confirm-sent">✓ 문자를 보냈어요</button>
       </div>
-      <button class="btn btn-ghost full" id="new-order">처음으로</button>
+
+      <!-- Phase 2: 주문 접수 확인 (문자 전송 후) -->
+      <div id="order-confirmed" hidden>
+        <div class="done-mark" aria-hidden="true">🍇</div>
+        <h4>주문이 접수되었습니다!</h4>
+        <p class="done-sub">농부 <span data-farmer-name></span>이 직접 확인하고 연락드리겠습니다.</p>
+        <div class="bank-box">
+          <p class="bank-label">입금 계좌</p>
+          <p class="bank-acc" id="bank-acc"></p>
+          <p class="bank-hint">주문 확인 후 안내드린 금액을 입금해 주세요.</p>
+        </div>
+        <button class="btn btn-ghost full" id="new-order">처음으로</button>
+      </div>
+
     </div>
   </aside>
 
