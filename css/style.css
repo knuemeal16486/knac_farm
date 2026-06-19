@@ -266,11 +266,14 @@ section{scroll-margin-top:64px}
 .qty button{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:var(--paper);font-size:1rem;cursor:pointer;line-height:1}
 .qty span{min-width:1.5em;text-align:center;font-weight:700}
 .ci-remove{background:none;border:none;color:var(--ink-soft);font-size:.78rem;cursor:pointer;text-decoration:underline}
-.cart-summary{margin-top:auto;padding-top:1.2rem}
+#cart-view{overflow-y:hidden;padding:0}
+.cart-scroll{flex:1;overflow-y:auto;min-height:0;padding:1.1rem 1.4rem 0;-webkit-overflow-scrolling:touch}
+.cart-foot{padding:.9rem 1.4rem 1.3rem;border-top:1px solid var(--line);flex-shrink:0;background:var(--paper-2)}
+.cart-summary{margin-top:0}
 .cart-summary .row{display:flex;justify-content:space-between;font-size:1.05rem;margin-bottom:.4rem}
 .cart-summary .row strong{font-size:1.25rem}
-.ship-note{font-size:.78rem;color:var(--ink-soft);margin-bottom:1rem}
-#go-checkout{margin-top:.5rem}
+.ship-note{font-size:.78rem;color:var(--ink-soft);margin-bottom:.75rem}
+#go-checkout{margin-top:.15rem}
 .checkout-foot{display:flex;gap:.7rem;margin-top:auto}
 .checkout-foot .btn{flex:1}
 .done-mark{width:56px;height:56px;border-radius:50%;background:var(--sage);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:800;margin:0 auto .8rem}
@@ -571,16 +574,34 @@ html{scrollbar-width:thin}
 @keyframes priceFlash{0%,100%{background:transparent}30%{background:rgba(143,166,106,.22)}}
 .price-flash{animation:priceFlash .4s ease;border-radius:6px}
 
-/* 드로어 3단계 진행 표시 */
+/* 드로어 단계 진행 표시 */
 .drawer-steps{
-  display:flex;align-items:center;justify-content:center;gap:.45rem;
-  padding:.6rem 1.4rem;border-bottom:1px solid var(--line);
-  font-size:.78rem;font-weight:600;color:var(--ink-soft);flex:0 0 auto;
+  display:flex;align-items:center;
+  padding:.65rem 1.2rem;border-bottom:1px solid var(--line);
+  font-size:.72rem;font-weight:600;color:var(--ink-soft);flex:0 0 auto;
+  counter-reset:step;
 }
-.drawer-step-sep{opacity:.4}
-.drawer-step{transition:color .2s,font-weight .2s}
+.drawer-step-sep{
+  flex:1;height:0;border-top:1.5px solid var(--line);font-size:0;
+  transition:border-color .25s;
+}
+.drawer-step.done+.drawer-step-sep{border-color:var(--sage-d)}
+.drawer-step{
+  display:flex;align-items:center;gap:.28rem;white-space:nowrap;
+  transition:color .2s;counter-increment:step;
+}
+.drawer-step::before{
+  content:counter(step);
+  display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:50%;
+  font-size:.6rem;font-weight:800;
+  background:var(--line);color:var(--ink-soft);
+  flex-shrink:0;transition:background .2s,color .2s;
+}
 .drawer-step.active{color:var(--ink);font-weight:800}
+.drawer-step.active::before{background:var(--sage);color:var(--ink)}
 .drawer-step.done{color:var(--sage-d)}
+.drawer-step.done::before{content:"✓";background:var(--sage-d);color:#fff;font-size:.7rem}
 
 /* ============================================================
    주문 방법 선택 화면
@@ -612,8 +633,22 @@ html{scrollbar-width:thin}
 }
 .checkout-hint{
   font-size:.84rem;color:var(--sage-d);font-weight:600;background:rgba(143,166,106,.1);
-  border-left:3px solid var(--sage-d);padding:.6rem .9rem;border-radius:0 8px 8px 0;margin-bottom:1rem
+  border-left:3px solid var(--sage-d);padding:.6rem .9rem;border-radius:0 8px 8px 0;margin-bottom:.7rem
 }
+/* 체크아웃 입력 진행률 바 */
+.form-progress{
+  height:3px;background:var(--line);border-radius:99px;
+  margin-bottom:1.2rem;overflow:hidden;
+}
+.form-progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,var(--sage),var(--sage-d));
+  border-radius:inherit;
+  transition:width .35s cubic-bezier(.4,0,.2,1);
+  width:0%;
+}
+/* 입력 완료 필드 */
+.drawer-body input.is-valid{border-color:var(--sage);background:rgba(143,166,106,.06)}
 
 /* 성장 일지 카드 호버 */
 .g-card{transition:transform .2s ease,box-shadow .2s ease}
@@ -677,6 +712,7 @@ html{scrollbar-width:thin}
 
 /* 360px 미만 초소형 화면: 드로어 진행 표시 & 결제 버튼 축소 */
 @media(max-width:359px){
-  .drawer-steps{font-size:.68rem;gap:.2rem;padding:.45rem .6rem}
+  .drawer-steps{font-size:.63rem;padding:.5rem .7rem}
+  .drawer-step::before{width:15px;height:15px;font-size:.55rem}
   .checkout-foot .btn{padding-inline:.65rem;font-size:.83rem}
 }

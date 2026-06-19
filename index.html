@@ -198,13 +198,17 @@
 
     <!-- 1단계: 담은 상품 -->
     <div class="drawer-body" id="cart-view">
-      <ul class="cart-items" id="cart-items"></ul>
-      <p class="cart-empty" id="cart-empty">담긴 상품이 없습니다.</p>
-      <div class="cart-summary">
-        <div class="row"><span>상품 합계</span><strong id="cart-total">0원</strong></div>
-        <p class="ship-note" id="ship-note"></p>
+      <div class="cart-scroll">
+        <ul class="cart-items" id="cart-items"></ul>
+        <p class="cart-empty" id="cart-empty">담긴 상품이 없습니다.</p>
       </div>
-      <button class="btn btn-primary full" id="go-checkout" disabled>주문하기</button>
+      <div class="cart-foot">
+        <div class="cart-summary">
+          <div class="row"><span>상품 합계</span><strong id="cart-total">0원</strong></div>
+          <p class="ship-note" id="ship-note"></p>
+        </div>
+        <button class="btn btn-primary full" id="go-checkout" disabled>주문하기</button>
+      </div>
     </div>
 
     <!-- 2단계: 주문 방법 선택 -->
@@ -234,6 +238,9 @@
     <!-- 3단계: 주문 정보 입력 -->
     <form class="drawer-body" id="checkout-view" hidden>
       <p class="checkout-hint" id="checkout-hint">입력하신 정보가 문자에 자동으로 채워집니다.</p>
+      <div class="form-progress" id="form-progress" aria-hidden="true">
+        <div class="form-progress-bar" id="form-progress-bar"></div>
+      </div>
       <label>받으시는 분 성함
         <input name="name" required autocomplete="name" />
       </label>
