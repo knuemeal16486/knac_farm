@@ -966,6 +966,48 @@
     addEventListener("resize", upd);
   }
 
+  function initColorSlider() {
+    const range = $("#cmp-range");
+    if (!range) return;
+    const thumb = $("#cmp-thumb");
+    const dot   = $("#cmp-rdot");
+    const stage = $("#cmp-rstage");
+
+    function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
+    function hexToRgb(h) {
+      const n = parseInt(h.slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+    function interpolateColor(pct) {
+      const stops = ["#7BF00E", "#A8F00E", "#E1F00E"];
+      const seg = pct <= 50 ? 0 : 1;
+      const t   = pct <= 50 ? pct / 50 : (pct - 50) / 50;
+      const [r1, g1, b1] = hexToRgb(stops[seg]);
+      const [r2, g2, b2] = hexToRgb(stops[seg + 1]);
+      return `rgb(${lerp(r1,r2,t)},${lerp(g1,g2,t)},${lerp(b1,b2,t)})`;
+    }
+
+    const STAGES = [
+      { max: 33,  label: "초록빛 · 덜 익음",   sub: "당도가 아직 오르는 중" },
+      { max: 66,  label: "황록빛 · 잘 익음 ✓", sub: "당도 최고, 수확 적기" },
+      { max: 100, label: "노란빛 · 과숙",       sub: "너무 익어 식감이 물러질 수 있어요" },
+    ];
+
+    function update() {
+      const pct  = Number(range.value);
+      const col  = interpolateColor(pct);
+      const info = STAGES.find((s) => pct <= s.max);
+      thumb.style.left        = pct + "%";
+      thumb.style.borderColor = col;
+      dot.style.background    = col;
+      stage.textContent       = info.label + " · " + info.sub;
+      range.setAttribute("aria-valuetext", info.label);
+    }
+
+    range.addEventListener("input", update);
+    update();
+  }
+
   function setupHeader() {
     const bar = $(".topbar");
     const onScroll = () => bar.classList.toggle("scrolled", window.scrollY > 8);
@@ -1143,6 +1185,7 @@
   setupHeroParallax();
   setupToTop();
   setupLightbox();
+  initColorSlider();
   window.addEventListener("pageshow", (e) => {
     if (!e.persisted) return;
     $$(".stat-num[data-to]").forEach(animateCount);
