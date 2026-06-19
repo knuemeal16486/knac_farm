@@ -267,12 +267,11 @@ section{scroll-margin-top:64px}
 .qty span{min-width:1.5em;text-align:center;font-weight:700}
 .ci-remove{background:none;border:none;color:var(--ink-soft);font-size:.78rem;cursor:pointer;text-decoration:underline}
 .cart-foot{
-  position:sticky;bottom:0;
+  flex:0 0 auto;
   background:var(--paper-2);
   padding:.9rem 1.4rem 1.3rem;
   border-top:1px solid var(--line);
   box-shadow:0 -4px 12px rgba(43,51,32,.06);
-  margin-top:auto;
 }
 .cart-summary{margin-top:0}
 .cart-summary .row{display:flex;justify-content:space-between;font-size:1.05rem;margin-bottom:.4rem}

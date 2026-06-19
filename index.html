@@ -200,13 +200,15 @@
     <div class="drawer-body" id="cart-view">
       <ul class="cart-items" id="cart-items"></ul>
       <p class="cart-empty" id="cart-empty">담긴 상품이 없습니다.</p>
-      <div class="cart-foot">
-        <div class="cart-summary">
-          <div class="row"><span>상품 합계</span><strong id="cart-total">0원</strong></div>
-          <p class="ship-note" id="ship-note"></p>
-        </div>
-        <button class="btn btn-primary full" id="go-checkout" disabled>주문하기</button>
+    </div>
+
+    <!-- 장바구니 하단 고정 영역 (1단계에서만 표시) -->
+    <div class="cart-foot" id="cart-foot">
+      <div class="cart-summary">
+        <div class="row"><span>상품 합계</span><strong id="cart-total">0원</strong></div>
+        <p class="ship-note" id="ship-note"></p>
       </div>
+      <button class="btn btn-primary full" id="go-checkout" disabled>주문하기</button>
     </div>
 
     <!-- 2단계: 주문 방법 선택 -->

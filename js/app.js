@@ -508,6 +508,7 @@
 
   function showView(v) {
     $("#cart-view").hidden     = v !== "cart";
+    $("#cart-foot").hidden     = v !== "cart";
     $("#method-view").hidden   = v !== "method";
     $("#checkout-view").hidden = v !== "checkout";
     $("#done-view").hidden     = v !== "done";
