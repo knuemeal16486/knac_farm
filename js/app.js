@@ -194,10 +194,16 @@
     <circle cx="20" cy="14" r="6"/><circle cx="11" cy="22" r="6"/><circle cx="29" cy="22" r="6"/>
     <circle cx="20" cy="29" r="6"/><circle cx="13" cy="35" r="5.5"/><circle cx="27" cy="35" r="5.5"/><circle cx="20" cy="41" r="5"/>
   </g></svg>`;
+  const juiceSVG = `<svg viewBox="0 0 40 48" width="40" height="48" aria-hidden="true"><g fill="currentColor">
+    <rect x="15" y="3" width="10" height="5" rx="1.4" opacity=".85"/>
+    <path d="M12 9h16l-1.4 31a4 4 0 0 1-4 3.8H17.4a4 4 0 0 1-4-3.8L12 9z" opacity=".45"/>
+    <path d="M14.2 24h11.6l-1 16.2a2 2 0 0 1-2 1.9h-5.6a2 2 0 0 1-2-1.9L14.2 24z"/>
+  </g></svg>`;
 
   /* ---------- 2. 제품 (옵션 선택형) ---------- */
   let sel = { weightIdx: 0, bunchIdx: 0, boxIdx: 0, wrapIdx: 0 };
   let pdpQty = 1;
+  let juiceQty = 1;
   let addCartLocked = false;
 
   const curWeight = () => OPTIONS.weight[sel.weightIdx];
@@ -233,6 +239,7 @@
           ${PRODUCT.soldout ? "품절" : "이 옵션 장바구니에 담기"}
         </button>
         <p class="bulk-link"><a href="${smsHref(bulkBody())}">10상자 이상 대량주문은 별도 문의 →</a></p>
+        ${juiceAddonHTML()}
         <div class="pdp-selected" id="pdp-selected"></div>` : `
         <div class="preharvest">
           <span class="ph-ic">${svg("leaf", 26)}</span>
@@ -245,6 +252,7 @@
         </div>`}
       </div>`;
     mountImage($("#pdp-img"), PRODUCT.image, PRODUCT.name, true);
+    if (juiceOn()) mountImage($("#juice-img"), JUICE.image, JUICE.name, true);
     renderOptions();
     updatePrice();
     renderPdpSelected();
@@ -259,13 +267,13 @@
       <div class="sel-row" data-key="${c.key}">
         <div class="sel-info">
           <div class="sel-name">${c.name}</div>
-          <div class="sel-opt">${c.opt.weight} · ${c.opt.bunch} · ${c.opt.box} · ${c.opt.wrap}</div>
+          <div class="sel-opt">${optText(c.opt)}</div>
         </div>
         <div class="sel-qty">
           <button data-dec="${c.key}" aria-label="수량 줄이기">−</button>
           <span>${c.qty}</span>
           <button data-inc="${c.key}" aria-label="수량 늘리기">+</button>
-          <span class="sel-unit">상자</span>
+          <span class="sel-unit">${c.unit || "상자"}</span>
         </div>
         <div class="sel-line">${won(c.price * c.qty)}<button class="sel-rm" data-rm="${c.key}" aria-label="삭제">✕</button></div>
       </div>`).join("");
@@ -367,6 +375,7 @@
       key: [w.id, bunch, box.id, wrap.id].join("|"),
       name: PRODUCT.name,
       opt,
+      unit: "상자",
       price: unitPrice(),
       qty: pdpQty,
     };
@@ -375,6 +384,59 @@
     pdpQty = 1;
     $("#pdp-qty").textContent = 1;
     updatePrice();
+  }
+
+  /* ---------- 2.5 샤인머스켓 즙 (애드온) ---------- */
+  const juiceOn = () => typeof JUICE !== "undefined" && JUICE && JUICE.sell;
+
+  function juiceAddonHTML() {
+    if (!juiceOn()) return "";
+    return `
+      <div class="pdp-addon" id="pdp-addon">
+        <span class="addon-tag">함께 담기</span>
+        <div class="addon-row">
+          <div class="addon-media card-img" id="juice-img">${juiceSVG}</div>
+          <div class="addon-text">
+            <strong class="addon-name">${JUICE.name}</strong>
+            <p class="addon-desc">${JUICE.pure} · ${JUICE.unit}</p>
+            <span class="addon-price">${won(JUICE.price)} <small>/ 박스</small></span>
+          </div>
+        </div>
+        <div class="addon-buy">
+          <div class="addon-qty" role="group" aria-label="즙 박스 수량">
+            <button type="button" data-jq="-1" aria-label="수량 줄이기">−</button>
+            <span id="juice-qty">${juiceQty}</span>
+            <button type="button" data-jq="1" aria-label="수량 늘리기">+</button>
+            <span class="pdp-qty-unit">박스</span>
+          </div>
+          <button class="btn btn-ghost addon-add" id="juice-add" ${JUICE.soldout ? "disabled" : ""}>${JUICE.soldout ? "품절" : "담기"}</button>
+        </div>
+      </div>`;
+  }
+
+  function setJuiceQty(d) {
+    juiceQty = Math.max(1, juiceQty + d);
+    const el = $("#juice-qty");
+    if (el) el.textContent = juiceQty;
+  }
+
+  function addJuiceToCart() {
+    if (!juiceOn() || JUICE.soldout || addCartLocked) return;
+    addCartLocked = true;
+    setTimeout(() => { addCartLocked = false; }, 300);
+    const line = {
+      key: "juice|box50",
+      name: JUICE.name,
+      opt: { unit: JUICE.unit, pure: "100% 순수 착즙" },
+      unit: "박스",
+      price: JUICE.price,
+      qty: juiceQty,
+    };
+    addLine(line);
+    showAdded(line);
+    juiceQty = 1;
+    const el = $("#juice-qty");
+    if (el) el.textContent = 1;
   }
 
 
@@ -413,6 +475,8 @@
   /* ---------- 3. 장바구니 (옵션 조합 단위) ---------- */
   const itemTotal = () => cart.reduce((s, c) => s + c.price * c.qty, 0);
   const itemCount = () => cart.reduce((s, c) => s + c.qty, 0);
+  // 상품마다 옵션 구성이 달라 opt 값들을 동적으로 이어 붙임 (빈 값 제외)
+  const optText = (opt, sep = " · ") => Object.values(opt || {}).filter(Boolean).join(sep);
 
   function addLine(line) {
     const row = cart.find((c) => c.key === line.key);
@@ -444,7 +508,7 @@
       <li class="cart-row" data-key="${c.key}">
         <div>
           <div class="ci-name">${c.name}</div>
-          <div class="ci-meta">${c.opt.weight} · ${c.opt.bunch} · ${c.opt.box} · ${c.opt.wrap}</div>
+          <div class="ci-meta">${optText(c.opt)}</div>
           <div class="qty">
             <button data-dec="${c.key}" aria-label="수량 줄이기">−</button>
             <span>${c.qty}</span>
@@ -610,7 +674,7 @@
     const f = new FormData(form);
     const method = f.get("method");
     const lines = cart.map((c) =>
-      `· ${c.name} ${c.opt.weight}/${c.opt.bunch}/${c.opt.box}/${c.opt.wrap} ${c.qty}개 — ${won(c.price * c.qty)}`
+      `· ${c.name} ${optText(c.opt, "/")} ${c.qty}${c.unit || "개"} — ${won(c.price * c.qty)}`
     );
     return [
       `[${FARM.name} 주문]`,
@@ -730,9 +794,12 @@
   /* ---------- 장바구니 담김 확인 ---------- */
   function showAdded(line) {
     const am = $("#added-modal");
+    const sub = line.name === (typeof JUICE !== "undefined" && JUICE.name)
+      ? "물 한 방울 안 탄 100% 순수 착즙입니다."
+      : "수확한 포도를 직접 선별해 보내드립니다.";
     $("#added-line").innerHTML =
-      `${line.opt.weight} · ${line.opt.bunch} · ${line.opt.box} · ${line.opt.wrap} · ${line.qty}개` +
-      `<span class="added-sub">수확한 포도를 직접 선별해 보내드립니다.</span>`;
+      `${optText(line.opt)} · ${line.qty}${line.unit || "개"}` +
+      `<span class="added-sub">${sub}</span>`;
     am.hidden = false;
   }
 
@@ -916,12 +983,14 @@
   /* ---------- 8. 이벤트 바인딩 ---------- */
   function bind() {
     document.addEventListener("click", (e) => {
-      const t = e.target.closest("[data-inc],[data-dec],[data-rm],[data-grp],[data-pq],#pdp-add,#pdp-order");
+      const t = e.target.closest("[data-inc],[data-dec],[data-rm],[data-grp],[data-pq],[data-jq],#pdp-add,#pdp-order,#juice-add");
       if (!t) return;
       if (t.id === "pdp-add") addCurrentToCart();
+      else if (t.id === "juice-add") addJuiceToCart();
       else if (t.id === "pdp-order") { openDrawer(); showView("checkout"); }
       else if (t.dataset.grp) selectOption(t.dataset.grp, Number(t.dataset.i));
       else if (t.dataset.pq) setPdpQty(Number(t.dataset.pq));
+      else if (t.dataset.jq) setJuiceQty(Number(t.dataset.jq));
       else if (t.dataset.inc) setQty(t.dataset.inc, 1);
       else if (t.dataset.dec) setQty(t.dataset.dec, -1);
       else if (t.dataset.rm) removeItem(t.dataset.rm);
