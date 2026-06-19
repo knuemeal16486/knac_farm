@@ -780,7 +780,7 @@ html{scrollbar-width:thin}
 /* 당도 비교 바 */
 .brix-cmp{display:flex;flex-direction:column;gap:.6rem}
 .bcmp-row{display:grid;grid-template-columns:6.2rem 1fr 3rem;align-items:center;gap:.7rem}
-.bcmp-label{font-size:.8rem;font-weight:600;color:var(--ink-soft);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bcmp-label{font-size:.8rem;font-weight:600;color:var(--ink-soft);text-align:right}
 .bcmp-track{height:10px;background:var(--cream);border-radius:999px;overflow:hidden}
 .bcmp-bar{
   height:100%;width:0;background:var(--line);border-radius:inherit;
@@ -801,6 +801,7 @@ html{scrollbar-width:thin}
 .bunch-tbl td{padding:.52rem .6rem;border-bottom:1px solid var(--line);line-height:1.5;color:var(--ink)}
 .bunch-tbl tbody tr:last-child td{border-bottom:none}
 .bunch-tbl .bw{font-weight:700;color:var(--sage-d);white-space:nowrap}
+@media(max-width:599px){.bunch-tbl th:last-child,.bunch-tbl td:last-child{display:none}}
 
 /* 선별 과정 */
 .sel-process{display:flex;flex-direction:column;gap:.35rem}
