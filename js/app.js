@@ -730,7 +730,7 @@
       `수령: ${method}`,
       method === "택배" ? `주소: ${fullAddress(f)}` : null,
       f.get("memo") ? `요청사항: ${f.get("memo")}` : null,
-      opts.repeat ? `🎁 재주문 고객 (${opts.orderNo}번째 주문) · 단골 덤 부탁드립니다` : null,
+      opts.repeat ? `🎁 재주문 고객 (${opts.orderNo}번째 주문)` : null,
       ``,
       `잘 부탁드립니다. 감사합니다!`,
     ].filter(Boolean).join("\n");
@@ -846,7 +846,7 @@
         const who = lastOrder.name ? `${lastOrder.name}님, ` : "";
         note.innerHTML =
           `🎁 <strong>${who}다시 찾아주셔서 감사합니다!</strong>` +
-          `<span class="repeat-sub">${lastOrder.count}번째 주문이에요. 단골 고객님께 작은 덤을 함께 담아 보내드릴게요.</span>`;
+          `<span class="repeat-sub">${lastOrder.count}번째 주문이에요. 감사한 마음을 담아 정성껏 준비하겠습니다.</span>`;
         note.hidden = false;
       } else {
         note.hidden = true;

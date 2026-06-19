@@ -67,7 +67,7 @@ section{scroll-margin-top:64px}
 }
 .brand{display:flex;align-items:center;gap:.55rem;color:var(--ink)}
 .brand-mark{color:var(--sage-d);display:flex}
-.brand-logo{width:36px;height:36px;border-radius:50%;object-fit:cover}
+.brand-logo{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--sage-d)}
 .brand-name{font-family:var(--serif);font-weight:700;font-size:1.12rem;letter-spacing:.01em;white-space:nowrap}
 .nav{display:none;gap:1.8rem;margin-left:auto;font-weight:500;font-size:.95rem}
 .nav a{color:var(--ink-soft);transition:.15s}
