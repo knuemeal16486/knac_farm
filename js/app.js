@@ -522,6 +522,40 @@
     });
   }
 
+  // 도로명/지번 주소를 우편번호·상세주소와 합쳐 한 줄로
+  function fullAddress(fd) {
+    const zip    = (fd.get("postcode") || "").trim();
+    const base   = (fd.get("address") || "").trim();
+    const detail = (fd.get("addressDetail") || "").trim();
+    if (!base) return "";
+    return (zip ? `(${zip}) ` : "") + base + (detail ? ` ${detail}` : "");
+  }
+
+  // 카카오(다음) 우편번호 서비스로 실제 주소 검색
+  function openPostcode() {
+    const base = $("#addr-base");
+    if (typeof daum === "undefined" || !daum.Postcode) {
+      // 스크립트 로드 실패 시: 직접 입력으로 폴백
+      base.removeAttribute("readonly");
+      base.placeholder = "도로명/지번 주소 직접 입력";
+      base.focus();
+      toast("주소 검색을 불러오지 못했습니다. 직접 입력해 주세요.");
+      return;
+    }
+    new daum.Postcode({
+      oncomplete: (data) => {
+        // 사용자가 고른 유형(도로명 R / 지번 J)에 맞춰 주소 채움
+        const addr = data.userSelectedType === "J" ? data.jibunAddress : data.roadAddress;
+        $("#addr-postcode").value = data.zonecode || "";
+        base.value = addr;
+        base.classList.add("is-valid");
+        // 상세주소로 포커스 이동 + 진행률 갱신
+        $("#addr-detail").focus();
+        $("#checkout-view").dispatchEvent(new Event("input", { bubbles: true }));
+      },
+    }).open();
+  }
+
   function prefillCheckout() {
     const hint = $("#checkout-hint");
     if (hint) hint.textContent = "입력하신 정보가 문자에 자동으로 채워집니다.";
@@ -532,7 +566,9 @@
       let filled = false;
       if (saved.name)  { form.elements.namedItem("name").value  = saved.name;  filled = true; }
       if (saved.phone) { form.elements.namedItem("phone").value = saved.phone; filled = true; }
+      if (saved.postcode) { form.elements.namedItem("postcode").value = saved.postcode; }
       if (saved.addr)  { form.elements.namedItem("address").value = saved.addr; filled = true; }
+      if (saved.addrDetail) { form.elements.namedItem("addressDetail").value = saved.addrDetail; }
       if (filled && hint) hint.textContent = "이전에 입력하신 정보를 불러왔습니다. 확인 후 주문해 주세요.";
     } catch {}
     setupFormProgress();
@@ -591,7 +627,7 @@
       `이름: ${f.get("name")}`,
       `연락처: ${f.get("phone")}`,
       `수령: ${method}`,
-      method === "택배" ? `주소: ${f.get("address")}` : null,
+      method === "택배" ? `주소: ${fullAddress(f)}` : null,
       f.get("memo") ? `요청사항: ${f.get("memo")}` : null,
       ``,
       `잘 부탁드립니다. 감사합니다!`,
@@ -611,8 +647,8 @@
     }
     const method = fd.get("method");
     if (method === "택배" && !(fd.get("address") || "").trim()) {
-      toast("주소를 입력해 주세요");
-      form.elements.namedItem("address").focus();
+      toast("주소 찾기로 주소를 입력해 주세요");
+      $("#addr-find").focus();
       return;
     }
     const submitBtn = form.querySelector('[type="submit"]');
@@ -631,7 +667,9 @@
       localStorage.setItem("knac_buyer", JSON.stringify({
         name: fd.get("name") || "",
         phone: fd.get("phone") || "",
+        postcode: fd.get("postcode") || "",
         addr: fd.get("address") || "",
+        addrDetail: fd.get("addressDetail") || "",
       }));
     } catch {}
 
@@ -925,6 +963,9 @@
     $("#back-cart").addEventListener("click", () => showView("method"));
     $("#new-order").addEventListener("click", () => { showView("cart"); closeDrawer(); });
     $("#checkout-view").addEventListener("submit", submitOrder);
+
+    // 주소 찾기 (카카오 우편번호 서비스)
+    $("#addr-find").addEventListener("click", openPostcode);
 
     // 수령 방법에 따라 주소칸 토글
     $$('input[name="method"]').forEach((r) =>

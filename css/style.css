@@ -252,6 +252,10 @@ section{scroll-margin-top:64px}
   border-radius:10px;background:var(--paper);color:var(--ink);width:100%;
 }
 .drawer-body input:focus,.drawer-body textarea:focus{outline:2px solid var(--sage);border-color:transparent}
+.addr-row{display:flex;gap:.5rem;align-items:stretch}
+.addr-row #addr-postcode{flex:1;min-width:0}
+.addr-find{flex:0 0 auto;white-space:nowrap;padding-inline:1.1rem}
+#addr-base[readonly],#addr-postcode[readonly]{background:var(--cream);color:var(--ink);cursor:default}
 .opt{color:var(--ink-soft);font-weight:400}
 .method{border:1.5px solid var(--line);border-radius:10px;padding:.9rem;margin-bottom:1rem}
 .method legend{font-weight:700;font-size:.85rem;padding:0 .4rem}
