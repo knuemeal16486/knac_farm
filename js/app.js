@@ -562,6 +562,19 @@
     backdrop.hidden = true;
     document.body.style.overflow = "";
   }
+  function setupDrawerSwipe() {
+    if (!("ontouchstart" in window)) return;
+    let sx = 0, sy = 0;
+    drawer.addEventListener("touchstart", (e) => {
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, { passive: true });
+    drawer.addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = Math.abs(e.changedTouches[0].clientY - sy);
+      if (dx > 72 && dy < 50) closeDrawer();
+    }, { passive: true });
+  }
+  setupDrawerSwipe();
   let orderMethod = "sms";
 
   function setupCallAvailability() {
@@ -923,14 +936,17 @@
     const el = $("#intro");
     if (!el) return;
     if (reduceMotion()) { el.remove(); return; }
+    document.body.style.overflow = "hidden";
     setTimeout(() => {
       el.classList.add("gone");
+      document.body.style.overflow = "";
       setTimeout(() => el.remove(), 750);
     }, 620);
   }
 
   function setupHeroParallax() {
     if (reduceMotion()) return;
+    if (window.matchMedia("(max-width:819px)").matches) return;
     const bg = $("#hero-bg"), decor = $(".hero-decor");
     addEventListener("scroll", () => {
       const y = Math.min(window.scrollY, 820);
@@ -1005,6 +1021,7 @@
     }
 
     range.addEventListener("input", update);
+    range.addEventListener("input", () => { $("#cmp-hint")?.remove(); }, { once: true });
     update();
   }
 

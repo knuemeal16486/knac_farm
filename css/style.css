@@ -18,7 +18,7 @@
   --sans:"Pretendard","Pretendard Variable",system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{-webkit-user-select:none;user-select:none}
+body{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text}
 html{scroll-behavior:smooth}
 body{
@@ -246,7 +246,7 @@ section{scroll-margin-top:64px}
 .drawer.open{transform:translateX(0)}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:1.3rem 1.4rem;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--paper-2);z-index:3}
 .drawer-head h3{font-family:var(--serif);font-size:1.35rem}
-.icon-btn{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--ink-soft);padding:.3rem}
+.icon-btn{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--ink-soft);padding:.3rem;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
 .drawer-body{padding:1.4rem;display:flex;flex-direction:column}
 .drawer-body[hidden],.cart-foot[hidden]{display:none}
 .drawer-body label{display:flex;flex-direction:column;gap:.35rem;font-weight:600;font-size:.9rem;margin-bottom:1rem}
@@ -306,7 +306,9 @@ section{scroll-margin-top:64px}
 
 /* ---------- 모바일 하단 고정 바 ---------- */
 .floating-cart{
-  position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:35;background:var(--ink);color:var(--paper-2);
+  position:fixed;left:1rem;right:1rem;
+  bottom:max(1rem,calc(1rem + env(safe-area-inset-bottom,0px)));
+  z-index:35;background:var(--ink);color:var(--paper-2);
   border:none;border-radius:14px;padding:1rem 1.2rem;font-weight:700;font-size:.95rem;cursor:pointer;
   display:flex;align-items:center;gap:.5rem;box-shadow:var(--shadow);
 }
@@ -396,7 +398,9 @@ section{scroll-margin-top:64px}
 
 /* 맨 위로 */
 .to-top{
-  position:fixed;right:1.1rem;bottom:5.6rem;z-index:36;width:44px;height:44px;border-radius:50%;
+  position:fixed;right:1.1rem;
+  bottom:max(5.6rem,calc(5.6rem + env(safe-area-inset-bottom,0px)));
+  z-index:36;width:44px;height:44px;border-radius:50%;
   border:1px solid var(--line);background:var(--paper-2);color:var(--ink);font-size:1.1rem;
   cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;transition:.2s ease;
 }
@@ -588,20 +592,31 @@ html{scrollbar-width:thin}
   .g-dot{padding-top:.65rem;padding-bottom:.65rem}
 }
 
-/* 수량 +/− 버튼: 터치 타깃 확대 */
+/* 수량 +/− 버튼: 터치 타깃 44px 확보 */
 @media(max-width:819px){
-  .sel-qty button,.qty button{width:34px;height:34px}
-  .pdp-qty button{width:36px;height:36px}
+  .sel-qty button,.qty button{width:44px;height:44px}
+  .pdp-qty button{width:44px;height:44px}
 }
 
-/* PDP 구매 영역: 360px 미만 아주 좁은 화면에서 세로 배치 */
-@media(max-width:359px){
+/* PDP 구매 영역: 500px 미만 세로 배치 (터치 환경에서 더 편한 스태킹) */
+@media(max-width:499px){
   .pdp-buy{flex-direction:column;align-items:flex-start;gap:.6rem}
 }
 
 /* 하단 플로팅 장바구니 바(~68px)가 푸터 콘텐츠를 가리지 않도록 여유 공간 추가 */
 @media(max-width:819px){
-  .footer{padding-bottom:5.5rem}
+  .footer{padding-bottom:max(5.5rem,calc(5.5rem + env(safe-area-inset-bottom,0px)))}
+  /* 드로어 body: 홈 바에 콘텐츠 잘림 방지 */
+  .drawer-body{padding-bottom:max(1.4rem,calc(1.4rem + env(safe-area-inset-bottom,0px)))}
+  /* 히어로 높이 축소 — 아이폰 14 기준 ~690px→~520px, 아래 콘텐츠 인지 가능 */
+  .hero{min-height:clamp(420px,72svh,640px)}
+  /* 소형 보조 텍스트 가독성 개선 */
+  .trust-ds{font-size:.88rem}
+  .cart-row .ci-meta{font-size:.82rem}
+  .ship-note{font-size:.82rem}
+  .cmp-labels{font-size:.72rem}
+  /* 지도 높이 */
+  .visit-map{height:240px}
 }
 
 /* 히어로 떠다니는 포도 블롭: 좁은 화면에서 텍스트와 겹침 방지 */
@@ -865,6 +880,13 @@ html{scrollbar-width:thin}
   margin-top:.3rem;padding:0 .15rem;
   font-size:.64rem;color:#bbb;
 }
+/* 슬라이더 첫 진입 힌트 (3초 후 페이드아웃, 첫 조작 시 JS가 제거) */
+.cmp-hint{
+  display:block;text-align:center;
+  font-size:.68rem;color:var(--sage-d);margin-top:.35rem;
+  animation:fadeHint 3s ease .5s forwards;
+}
+@keyframes fadeHint{0%,70%{opacity:1}100%{opacity:0}}
 .pt-mark{
   flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;
   background:var(--gold);color:#fff;border:none;
