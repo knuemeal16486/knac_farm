@@ -247,7 +247,7 @@ section{scroll-margin-top:64px}
 .drawer-body label{display:flex;flex-direction:column;gap:.35rem;font-weight:600;font-size:.9rem;margin-bottom:1rem}
 .drawer-body input,.drawer-body textarea{
   font-family:var(--sans);font-size:1rem;padding:.75rem .85rem;border:1.5px solid var(--line);
-  border-radius:10px;background:var(--paper);color:var(--ink);
+  border-radius:10px;background:var(--paper);color:var(--ink);width:100%;
 }
 .drawer-body input:focus,.drawer-body textarea:focus{outline:2px solid var(--sage);border-color:transparent}
 .opt{color:var(--ink-soft);font-weight:400}
@@ -674,3 +674,9 @@ html{scrollbar-width:thin}
 .cc-price{font-family:var(--serif);font-size:1.75rem;font-weight:700;color:var(--ink)}
 .cc-actions{display:flex;gap:.7rem}
 .cc-actions .btn{flex:1}
+
+/* 360px 미만 초소형 화면: 드로어 진행 표시 & 결제 버튼 축소 */
+@media(max-width:359px){
+  .drawer-steps{font-size:.68rem;gap:.2rem;padding:.45rem .6rem}
+  .checkout-foot .btn{padding-inline:.65rem;font-size:.83rem}
+}

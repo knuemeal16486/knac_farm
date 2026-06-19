@@ -77,7 +77,7 @@
     pl.href = "tel:" + digits(FARM.phone);
     document.title = FARM.name + " · 산지직송";
 
-    $("[data-farmer-name]").textContent = FARMER.name;
+    $$("[data-farmer-name]").forEach((e) => (e.textContent = FARMER.name));
     $("[data-farmer-years]").textContent = FARMER.years ? `· 경력 ${FARMER.years}년` : "";
     $("[data-farmer-letter]").textContent = FARMER.letter;
     mountImage($('[data-photo="farmer"]'), FARMER.photo, FARMER.name + " 농부", true);
