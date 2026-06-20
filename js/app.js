@@ -908,8 +908,22 @@
   }
 
   /* ---------- 7. 스크롤 등장 ---------- */
+  function wrapRevealHeadings() {
+    $$(".section-head h2, .story-name").forEach((el) => {
+      if (el.querySelector(".reveal-text")) return;
+      const rt = document.createElement("span");
+      rt.className = "reveal-text";
+      const inner = document.createElement("span");
+      inner.innerHTML = el.innerHTML;
+      rt.appendChild(inner);
+      el.innerHTML = "";
+      el.appendChild(rt);
+    });
+  }
+
   function setupReveal() {
-    const targets = $$(".trust-item, .story, .section-head, .g-card, .value-card, .guide-card, .card, .visit-info");
+    wrapRevealHeadings();
+    const targets = $$(".trust-item, .story, .section-head, .g-card, .value-card, .guide-card, .card, .visit-info, .testimonials");
     targets.forEach((t) => t.classList.add("reveal"));
     if (!("IntersectionObserver" in window)) {
       targets.forEach((t) => t.classList.add("in"));
