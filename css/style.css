@@ -773,7 +773,7 @@ html{scrollbar-width:thin}
   max-width:var(--maxw);margin:0 auto;
   display:grid;gap:1.4rem;grid-template-columns:1fr;
 }
-@media(min-width:820px){.guide-inner{grid-template-columns:1fr 1fr}}
+@media(min-width:820px){.guide-inner{grid-template-columns:1fr 1fr;align-items:start}}
 .guide-card{
   background:var(--paper-2);border:1px solid var(--line);border-radius:var(--rad);
   padding:1.7rem 1.6rem;display:flex;flex-direction:column;gap:.9rem;
