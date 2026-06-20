@@ -794,7 +794,7 @@ html{scrollbar-width:thin}
 .gc-note{
   font-size:.8rem;color:var(--sage-d);background:rgba(143,166,106,.08);
   border-left:3px solid var(--sage);padding:.55rem .85rem;border-radius:0 8px 8px 0;
-  line-height:1.65;margin-top:auto;
+  line-height:1.65;
 }
 
 /* 당도 비교 바 */
