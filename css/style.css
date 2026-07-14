@@ -821,8 +821,8 @@ html{scrollbar-width:thin}
 .bunch-tbl td{padding:.52rem .6rem;border-bottom:1px solid var(--line);line-height:1.5;color:var(--ink)}
 .bunch-tbl tbody tr:last-child td{border-bottom:none}
 .bunch-tbl .bw{font-weight:700;color:var(--sage-d);white-space:nowrap}
-.bunch-tbl tbody tr:nth-child(-n+2) td{background:var(--paper-2)}
-.bunch-tbl tbody tr:nth-child(n+4) td{background:var(--cream)}
+.bunch-tbl tbody tr:nth-child(n+2):nth-child(-n+3) td{background:var(--paper-2)}
+.bunch-tbl tbody tr:nth-child(n+5) td{background:var(--cream)}
 .tbl-kg-sep td{text-align:center;padding:.3rem 0;font-size:.72rem;font-weight:700;color:var(--sage-d);letter-spacing:.12em;border-top:1.5px solid var(--sage);background:transparent!important}
 @media(max-width:599px){.bunch-tbl{font-size:.78rem}}
 
@@ -854,7 +854,7 @@ html{scrollbar-width:thin}
 .cmp-slider-wrap{position:relative;height:40px;border-radius:8px}
 .cmp-track{
   position:absolute;inset:0;border-radius:8px;
-  background:linear-gradient(to right,#7BF00E 0%,#A8F00E 50%,#E6EB10 100%);
+  background:linear-gradient(to right,#82B33C 0%,#BCCF52 50%,#E8D34F 100%);
   pointer-events:none;
 }
 @keyframes thumbWiggle{
@@ -887,10 +887,11 @@ html{scrollbar-width:thin}
   box-shadow:inset -2px -2px 4px rgba(0,0,0,.12);
 }
 .cmp-rstage{font-size:.74rem;font-weight:700;color:var(--ink-soft)}
+.cmp-rstage--good{color:var(--sage-d)}
 .cmp-labels{
   display:flex;justify-content:space-between;
   margin-top:.3rem;padding:0 .15rem;
-  font-size:.64rem;color:#bbb;
+  font-size:.64rem;color:var(--ink-soft);opacity:.75;
 }
 /* 슬라이더 첫 진입 힌트 (3초 후 페이드아웃, 첫 조작 시 JS가 제거) */
 .cmp-hint{
@@ -923,12 +924,13 @@ html{scrollbar-width:thin}
    ============================================================ */
 @keyframes rowSlideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
 @keyframes tipReveal{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.guide-card.in .bunch-tbl tbody tr:nth-child(1){animation:rowSlideIn .4s ease .1s both}
-.guide-card.in .bunch-tbl tbody tr:nth-child(2){animation:rowSlideIn .4s ease .2s both}
-.guide-card.in .bunch-tbl tbody tr:nth-child(3){animation:rowSlideIn .3s ease .25s both}
-.guide-card.in .bunch-tbl tbody tr:nth-child(4){animation:rowSlideIn .4s ease .3s both}
-.guide-card.in .bunch-tbl tbody tr:nth-child(5){animation:rowSlideIn .4s ease .4s both}
-.guide-card.in .bunch-tbl tbody tr:nth-child(6){animation:rowSlideIn .4s ease .5s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(1){animation:rowSlideIn .3s ease .05s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(2){animation:rowSlideIn .4s ease .12s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(3){animation:rowSlideIn .4s ease .2s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(4){animation:rowSlideIn .3s ease .27s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(5){animation:rowSlideIn .4s ease .34s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(6){animation:rowSlideIn .4s ease .42s both}
+.guide-card.in .bunch-tbl tbody tr:nth-child(7){animation:rowSlideIn .4s ease .5s both}
 .guide-card.in .pick-tips li:nth-child(1){animation:tipReveal .45s ease .08s both}
 .guide-card.in .pick-tips li:nth-child(2){animation:tipReveal .45s ease .2s both}
 .guide-card.in .pick-tips li:nth-child(3){animation:tipReveal .45s ease .32s both}
