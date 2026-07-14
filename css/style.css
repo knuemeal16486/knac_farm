@@ -419,6 +419,27 @@ section{scroll-margin-top:64px}
    제품 옵션 선택(PDP) + 담김 확인 모달 (추가)
    ============================================================ */
 .pdp{max-width:var(--maxw);margin:0 auto;padding-inline:clamp(1.1rem,4vw,2.8rem);display:grid;gap:2rem}
+
+/* 구매 안내문구 (주문 섹션 하단) */
+.order-notices{
+  max-width:var(--maxw);margin:2.4rem auto 0;
+  padding:1.2rem 1.4rem;
+  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--rad);
+}
+.on-title{
+  font-size:.82rem;font-weight:700;color:var(--ink-soft);
+  letter-spacing:.02em;margin-bottom:.6rem;
+}
+.on-list{list-style:none;display:flex;flex-direction:column;gap:.35rem}
+.on-list li{
+  position:relative;padding-left:.95rem;
+  font-size:.78rem;color:var(--ink-soft);line-height:1.7;
+}
+.on-list li::before{
+  content:"";position:absolute;left:.15rem;top:.72em;
+  width:4px;height:4px;border-radius:50%;background:var(--sage);
+}
+@media(max-width:599px){.order-notices{padding:1rem 1.05rem;margin-top:1.8rem}}
 @media(min-width:820px){.pdp{grid-template-columns:1fr 1.05fr;align-items:start;gap:3.2rem}}
 .pdp-media .card-img{border-radius:var(--rad);overflow:hidden;border:1px solid var(--line)}
 .pdp-opt-badge{position:absolute;bottom:.7rem;left:.7rem;background:rgba(43,51,32,.72);color:#fff;font-size:.78rem;font-weight:700;padding:.3em .75em;border-radius:999px;backdrop-filter:blur(4px);transition:opacity .2s;pointer-events:none}

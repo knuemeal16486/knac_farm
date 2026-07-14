@@ -99,6 +99,7 @@
     }
     $("#ship-note").textContent = CONFIG.shipping;
     $("#bank-acc").textContent = CONFIG.bankAccount;
+    renderNotices();
 
     const b = CONFIG.business;
     if (b) {
@@ -482,6 +483,21 @@
       const box = track.querySelector(`.g-card[data-idx="${i}"] .g-img`);
       mountImage(box, g.image, `${g.date} ${g.title}`, true);
     });
+  }
+
+  /* ---------- 구매 안내문구 렌더 (data.js의 NOTICES + CONFIG.returnPolicy) ---------- */
+  function renderNotices() {
+    const box = $("#order-notices");
+    if (!box) return;
+    const items = [
+      ...(typeof NOTICES !== "undefined" && NOTICES && Array.isArray(NOTICES.items) ? NOTICES.items : []),
+      CONFIG.returnPolicy || null,
+    ].filter(Boolean);
+    if (!items.length) { box.remove(); return; }
+    const title = (typeof NOTICES !== "undefined" && NOTICES && NOTICES.title) || "구매 전 확인해 주세요";
+    box.innerHTML = `
+      <h3 class="on-title">${title}</h3>
+      <ul class="on-list">${items.map((t) => `<li>${t}</li>`).join("")}</ul>`;
   }
 
   /* ---------- 3. 장바구니 (옵션 조합 단위) ---------- */
