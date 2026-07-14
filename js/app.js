@@ -458,10 +458,10 @@
     const track = $("#growth-track");
     if (!dots || !track) return;
     dots.innerHTML = GROWTH.map((g, i) =>
-      `<button class="g-dot${i === 0 ? " on" : ""}" data-go="${i}" role="tab" aria-selected="${i === 0 ? "true" : "false"}" aria-label="${g.date} ${g.title}">${g.date}</button>`
+      `<button class="g-dot${i === 0 ? " on" : ""}" data-go="${i}" role="tab" aria-selected="${i === 0 ? "true" : "false"}" aria-controls="g-card-${i}" aria-label="${g.date} ${g.title}">${g.date}</button>`
     ).join("");
     track.innerHTML = GROWTH.map((g, i) => `
-      <article class="g-card" data-idx="${i}">
+      <article class="g-card" data-idx="${i}" id="g-card-${i}" role="tabpanel" aria-label="${g.date} ${g.title}">
         <div class="g-img">
           <span class="g-step">${i + 1} / ${GROWTH.length}</span>
           ${g.brix ? `<span class="g-brix">${g.brix} Brix</span>` : ""}
