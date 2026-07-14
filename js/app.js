@@ -1031,7 +1031,7 @@
       return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
     }
     function interpolateColor(pct) {
-      const stops = ["#7BF00E", "#A8F00E", "#E6EB10"];
+      const stops = ["#82B33C", "#BCCF52", "#E8D34F"];
       const seg = pct <= 50 ? 0 : 1;
       const t   = pct <= 50 ? pct / 50 : (pct - 50) / 50;
       const [r1, g1, b1] = hexToRgb(stops[seg]);
@@ -1040,9 +1040,9 @@
     }
 
     const STAGES = [
-      { max: 33,  label: "초록빛 · 덜 익음",   sub: "당도가 아직 오르는 중" },
-      { max: 66,  label: "황록빛 · 잘 익음 ✓", sub: "당도 최고, 수확 적기" },
-      { max: 100, label: "노란빛 · 과숙",       sub: "너무 익어 식감이 물러질 수 있어요" },
+      { max: 33,  label: "초록빛 · 덜 익음", sub: "당도가 아직 오르는 중" },
+      { max: 66,  label: "황록빛 · 잘 익음", sub: "당도 최고, 수확 적기", good: true },
+      { max: 100, label: "노란빛 · 과숙",    sub: "너무 익어 식감이 물러질 수 있어요" },
     ];
 
     function update() {
@@ -1053,6 +1053,7 @@
       thumb.style.borderColor = col;
       dot.style.background    = col;
       stage.textContent       = info.label + " · " + info.sub;
+      stage.classList.toggle("cmp-rstage--good", !!info.good);
       range.setAttribute("aria-valuetext", info.label);
     }
 
