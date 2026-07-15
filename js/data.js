@@ -76,7 +76,7 @@ const JUICE = {
   pure: "물 한 방울 안 탄 100% 순수 착즙",     // 한 줄 설명
   price: 40000,                              // ★ 박스당 가격
   image: "assets/juice.jpg",                 // 없으면 일러스트 자동 표시
-  soldout: false,
+  soldout: true,                             // 올해는 즙 판매 안 함 — 판매 재개 시 false 로
 };
 
 /* ---------- 3.5 신뢰 배지 (히어로 아래 3종) ---------- */
