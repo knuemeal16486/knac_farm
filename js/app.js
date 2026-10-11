@@ -762,33 +762,36 @@
     } catch {}
   }
 
+  const fmtPhone = (s) => {
+    const d = digits(s);
+    return d.length === 11 ? d.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3")
+      : d.length === 10 ? d.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3") : s;
+  };
+
+  function smsItemLine(c) {
+    const o = c.opt || {};
+    if (!o.weight) return `${c.name} ${c.qty}${c.unit || "개"} ${won(c.price * c.qty)}`;
+    const wrap = OPTIONS.wrap.length > 1 ? `, ${o.wrap}` : "";
+    return `${c.name} ${o.weight} ${o.bunch} (${o.box}${wrap}) ${c.qty}${c.unit || "상자"} ${won(c.price * c.qty)}`;
+  }
+
   function buildSummary(form, opts = {}) {
     const f = new FormData(form);
     const method = f.get("method");
-    const lines = cart.map((c) =>
-      `· ${c.name} ${optText(c.opt, "/")} ${c.qty}${c.unit || "개"} — ${won(c.price * c.qty)}`
-    );
     return [
-      `[${FARM.name} 주문]`,
+      `안녕하세요. ${FARM.name} 홈페이지 보고 주문합니다.`,
+      opts.repeat ? `전에도 주문했었어요.` : null,
       ``,
-      `안녕하세요, ${FARMER.name} 농부님!`,
-      `아래와 같이 주문 드립니다.`,
+      ...cart.map(smsItemLine),
+      cart.length > 1 ? `합계 ${won(itemTotal())}` : null,
       ``,
-      `─────────────────`,
-      ...lines,
-      `─────────────────`,
-      `합계: ${won(itemTotal())}`,
-      `배송비: ${CONFIG.shipping}`,
-      ``,
-      `이름: ${f.get("name")}`,
-      `연락처: ${f.get("phone")}`,
-      `수령: ${method}`,
-      method === "택배" ? `주소: ${fullAddress(f)}` : null,
+      `받는 분: ${f.get("name")}`,
+      `연락처: ${fmtPhone(f.get("phone"))}`,
+      method === "택배" ? `주소: ${fullAddress(f)}` : `수령: 농장에서 직접 받을게요`,
       f.get("memo") ? `요청사항: ${f.get("memo")}` : null,
-      opts.repeat ? `🎁 재주문 고객 (${opts.orderNo}번째 주문)` : null,
       ``,
-      `잘 부탁드립니다. 감사합니다!`,
-    ].filter(Boolean).join("\n");
+      `확인 부탁드립니다. 감사합니다.`,
+    ].filter((l) => l !== null).join("\n");
   }
 
   async function submitOrder(e) {
