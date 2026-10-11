@@ -462,6 +462,11 @@ section{scroll-margin-top:64px}
 .pdp-price{display:flex;flex-direction:column}
 .pdp-price-label{font-size:.78rem;color:var(--ink-soft)}
 #pdp-price{font-family:var(--serif);font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.price-was{display:flex;align-items:center;gap:.4rem;margin-top:.2rem}
+.price-was:empty{display:none}
+.price-off{font-weight:800;font-size:.95rem;color:#d1452f}
+.price-orig{font-size:.9rem;color:var(--ink-soft);text-decoration:line-through}
+.opt-pill-price{margin-left:.4rem;font-size:.78em;opacity:.75;font-weight:500}
 .pdp-qty{display:flex;align-items:center;gap:.6rem;border:1.5px solid var(--line);border-radius:999px;padding:.3rem .5rem}
 .pdp-qty button{width:30px;height:30px;border-radius:50%;border:none;background:var(--cream);color:var(--ink);font-size:1.1rem;cursor:pointer;line-height:1}
 .pdp-qty button:hover{background:var(--sage);color:#fff}
