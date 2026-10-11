@@ -211,6 +211,11 @@
   const curWeight = () => OPTIONS.weight[sel.weightIdx];
   const unitPrice = () =>
     curWeight().price + OPTIONS.box[sel.boxIdx].add + OPTIONS.wrap[sel.wrapIdx].add;
+  const listUnitPrice = () => {
+    const lp = curWeight().listPrice;
+    return lp > curWeight().price ? lp + OPTIONS.box[sel.boxIdx].add + OPTIONS.wrap[sel.wrapIdx].add : null;
+  };
+  const offPct = (price, list) => Math.round((1 - price / list) * 100);
 
   function renderPDP() {
     const pdp = $("#pdp");
@@ -230,7 +235,7 @@
         <div id="opt-groups"></div>
         ${CONFIG.saleOpen ? `
         <div class="pdp-buy">
-          <div class="pdp-price"><span class="pdp-price-label">가격 (배송비 별도)</span><span id="pdp-price"></span></div>
+          <div class="pdp-price"><span class="pdp-price-label">가격 (배송비 별도)</span><span class="price-was" id="pdp-price-was"></span><span id="pdp-price"></span></div>
           <div class="pdp-qty" role="group" aria-label="수량(상자)">
             <button type="button" data-pq="-1" aria-label="수량 줄이기">−</button>
             <span id="pdp-qty">1</span>
@@ -304,7 +309,9 @@
     const box = $("#opt-groups");
     if (!box) return;
     box.innerHTML =
-      optGroup("무게", "weight", OPTIONS.weight.map((w) => w.label), sel.weightIdx) +
+      optGroup("무게", "weight", OPTIONS.weight.map((w) =>
+        CONFIG.saleOpen ? `${w.label}<small class="opt-pill-price">${won(w.price)}</small>` : w.label
+      ), sel.weightIdx) +
       optGroup("송이 수", "bunch", curWeight().bunches, sel.bunchIdx) +
       optGroup("상자", "box", OPTIONS.box.map((b) => b.label), sel.boxIdx) +
       optGroup("포장", "wrap", OPTIONS.wrap.map((w) => w.label), sel.wrapIdx);
@@ -338,6 +345,13 @@
     const el = $("#pdp-price");
     if (!el) return;
     el.textContent = won(unitPrice() * pdpQty);
+    const was = $("#pdp-price-was");
+    const list = listUnitPrice();
+    if (was) {
+      was.innerHTML = list
+        ? `<span class="price-off">${offPct(unitPrice(), list)}%</span><s class="price-orig">${won(list * pdpQty)}</s>`
+        : "";
+    }
     el.classList.remove("price-flash");
     void el.offsetWidth;
     el.classList.add("price-flash");

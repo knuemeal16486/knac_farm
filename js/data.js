@@ -36,7 +36,7 @@ const FARMER = {
 /* ---------- 3. 제품 & 옵션 ----------
    PRODUCT : 판매 상품 정보 (현재 샤인머스켓 1종)
    OPTIONS : 손님이 고르는 옵션
-     weight : 무게. price=기본가격(원, ★실제가격으로 수정), bunches=고를 수 있는 송이수
+     weight : 무게. price=판매가(원), listPrice=할인 전 가격(선택), bunches=고를 수 있는 송이수
      box    : 상자 종류. add=추가금(원)
      wrap   : 포장 방식. add=추가금(원)
    최종가격 = 선택한 무게 price + 상자 add + 포장 add
@@ -52,16 +52,16 @@ const PRODUCT = {
 
 const OPTIONS = {
   weight: [
-    { id: "2kg", label: "2kg", price: 30000, bunches: ["2수", "3수"] },          // ★ 가격 수정
-    { id: "4kg", label: "4kg", price: 55000, bunches: ["4수", "5수", "6수"] },   // ★ 가격 수정
+    // price=판매가, listPrice=할인 전 가격(취소선으로 표시). listPrice 지우면 할인 표시 없이 판매가만 나옴.
+    { id: "2kg", label: "2kg", price: 18000, listPrice: 20000, bunches: ["2수", "3수"] },
+    { id: "4kg", label: "4kg", price: 32000, listPrice: 35000, bunches: ["4수", "5수", "6수"] },
   ],
   box: [
     { id: "normal",   label: "일반상자", add: 0 },
     { id: "delivery", label: "택배상자", add: 0 },     // 추가금 있으면 add 값 수정
   ],
   wrap: [
-    { id: "basic",  label: "일반 포장",  add: 0 },
-    { id: "aircap", label: "에어캡 포장", add: 0 },     // 추가금 있으면 add 값 수정 (예: 2000)
+    { id: "aircap", label: "에어캡 포장", add: 0 },     // 에어캡 포장만 판매 (가격에 포함)
   ],
 };
 
