@@ -605,6 +605,7 @@ html{scrollbar-width:thin}
 /* 농부 사진 프레임: 4/5 비율이면 375px 폰에서 ~425px 세로로 뷰포트를 꽉 채움 → 4/3으로 완화 */
 @media(max-width:819px){
   .photo-frame{aspect-ratio:4/3}
+  .photo-frame img{object-position:center 28%}
 }
 
 /* 농부 편지: 행간 완화 (2.05 → 1.85) */
