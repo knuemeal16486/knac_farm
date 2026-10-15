@@ -37,6 +37,22 @@ sojeongri/
 3. 저장소 → **Settings → Pages** → Source: `Deploy from a branch` → Branch: `main` / `/(root)` → Save
 4. 1~2분 뒤 `https://<아이디>.github.io/<저장소명>/` 에서 확인
 
+## 도메인 연결 (knacfarm.com)
+1. 도메인 등록업체(가비아·Cloudflare 등)에서 `knacfarm.com` 구매
+2. 등록업체의 **DNS 관리**에서 아래 레코드 추가 (기존 A/CNAME 레코드가 있으면 삭제)
+
+   | 타입 | 호스트 | 값 |
+   |---|---|---|
+   | A | @ | 185.199.108.153 |
+   | A | @ | 185.199.109.153 |
+   | A | @ | 185.199.110.153 |
+   | A | @ | 185.199.111.153 |
+   | CNAME | www | knuemeal16486.github.io |
+
+3. 저장소 → **Settings → Pages → Custom domain**에 `knacfarm.com` 입력 → Save
+   (저장소 루트에 `CNAME` 파일이 생기며, 기존 github.io 주소는 새 주소로 자동 이동)
+4. DNS 확인이 끝나면(보통 수십 분, 길면 하루) 같은 화면의 **Enforce HTTPS** 체크
+
 ## 주문 흐름 (중요)
 GitHub Pages는 서버가 없어 **실시간 카드결제는 불가능**합니다. 그래서 이렇게 동작합니다:
 

@@ -124,6 +124,7 @@
         name: PRODUCT.name,
         description: PRODUCT.desc,
         brand: { "@type": "Brand", name: FARM.name },
+        url: FARM.siteUrl,
         offers: {
           "@type": "AggregateOffer",
           priceCurrency: "KRW",
@@ -139,6 +140,7 @@
         description: `경북 상주 소정리, 해발 ${FARM.elevation}m 백화산 자락에서 손수확한 샤인머스켓.`,
         address: { "@type": "PostalAddress", streetAddress: FARM.address, addressCountry: "KR" },
         telephone: FARM.phone,
+        url: FARM.siteUrl,
         geo: { "@type": "GeoCoordinates", latitude: FARM.lat, longitude: FARM.lng },
       },
     ]);
