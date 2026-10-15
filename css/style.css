@@ -1112,3 +1112,30 @@ body::after{
   .testi-grid{grid-template-columns:1fr}
   .testi-card{font-size:.95rem;padding:1.4rem 1.2rem}
 }
+
+/* ============================================================
+   모바일 가독성 · 터치 개선
+   ============================================================ */
+/* 장바구니가 비어 있으면 하단 바 숨김 (display:flex가 hidden 속성을 덮어쓰던 문제) */
+.floating-cart[hidden]{display:none}
+/* 닫힌 드로어의 그림자가 화면 오른쪽 가장자리에 비치지 않도록 */
+.drawer:not(.open){box-shadow:none}
+
+@media(max-width:819px){
+  .value-desc{font-size:.9rem;line-height:1.7}
+  .value-title{font-size:1.02rem}
+  .bcmp-label,.bcmp-val{font-size:.85rem}
+  .gc-note{font-size:.86rem}
+  .pick-tips li p{font-size:.9rem}
+  .on-list li{font-size:.86rem}
+  .addon-desc{font-size:.86rem}
+  .opt-pill-price{font-size:.85em}
+  .biz-info{font-size:.8rem;opacity:.7}
+  .addon-qty button{width:40px;height:40px}
+  .bulk-link a{display:inline-block;padding-block:.6rem}
+}
+@media(max-width:599px){
+  .values-grid{grid-template-columns:1fr}
+  .value-card{padding:1.15rem 1.2rem}
+  .bunch-tbl{font-size:.85rem}
+}
