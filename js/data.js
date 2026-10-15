@@ -147,7 +147,7 @@ const CONFIG = {
   // 코드를 바꾸거나 여러 개 추가 가능. 할인 끄려면 [] 로 비우기.
   friendCodes: [
     { code: "JKJ12026",  perBox: 2000 },   // 아빠 지인
-    { code: "SHJ12016",  perBox: 2000 },   // 엄마 지인
+    { code: "SHJ12026",  perBox: 2000 },   // 엄마 지인
     { code: "SH2J12026", perBox: 2000 },   // 형 지인
     { code: "JHJ12026",  perBox: 2000 },   // 재황 지인
     { code: "YAJ12026",  perBox: 2000 },   // 연아 지인
