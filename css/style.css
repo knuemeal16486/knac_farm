@@ -1139,3 +1139,16 @@ body::after{
   .value-card{padding:1.15rem 1.2rem}
   .bunch-tbl{font-size:.85rem}
 }
+
+/* 지인 할인 코드 */
+.promo-field{display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem}
+.promo-field[hidden]{display:none}
+.promo-field>label{display:block;margin-bottom:0}
+.promo-row{display:flex;gap:.5rem;align-items:stretch}
+.promo-row input{flex:1;min-width:0;text-transform:uppercase}
+.promo-row input::placeholder{text-transform:none}
+.promo-row .btn{flex:0 0 auto;padding-inline:1.1rem}
+.promo-msg{font-size:.85rem;line-height:1.5;min-height:0}
+.promo-msg:empty{display:none}
+.promo-msg.ok{color:var(--sage-d);font-weight:700}
+.promo-msg.err{color:#c0392b}
