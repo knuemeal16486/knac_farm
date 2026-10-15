@@ -408,6 +408,14 @@
       <label>요청사항 <span class="opt">(선택)</span>
         <textarea name="memo" rows="2" placeholder="예) 추석 전 도착 희망"></textarea>
       </label>
+      <div class="promo-field" id="promo-field">
+        <label for="promo-input">지인 할인 코드 <span class="opt">(선택)</span></label>
+        <div class="promo-row">
+          <input name="promo" id="promo-input" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="코드가 있으면 입력" />
+          <button type="button" class="btn btn-ghost" id="promo-apply">적용</button>
+        </div>
+        <p class="promo-msg" id="promo-msg" aria-live="polite"></p>
+      </div>
       <div class="checkout-foot">
         <button type="button" class="btn btn-ghost" id="back-cart">← 뒤로</button>
         <button type="submit" class="btn btn-primary">문자 내용 확인 →</button>

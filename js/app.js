@@ -706,6 +706,7 @@
       if (filled && hint) hint.textContent = "이전에 입력하신 정보를 불러왔습니다. 확인 후 주문해 주세요.";
     } catch {}
     setupFormProgress();
+    renderPromoMsg(false);
   }
 
   function setupFormProgress() {
@@ -777,15 +778,46 @@
     return `${c.name} ${o.weight} ${o.bunch} (${o.box}${wrap}) ${c.qty}${c.unit || "상자"} ${won(c.price * c.qty)}`;
   }
 
+  /* 지인 할인 코드 */
+  const normCode = (s) => (s || "").replace(/\s+/g, "").toUpperCase();
+  const findPromo = (code) => {
+    const c = normCode(code);
+    return c ? (CONFIG.friendCodes || []).find((p) => normCode(p.code) === c) || null : null;
+  };
+  const boxCount = () => cart.filter((c) => c.opt && c.opt.weight).reduce((s, c) => s + c.qty, 0);
+  const promoDiscount = (p) => (p ? p.perBox * boxCount() : 0);
+
+  function renderPromoMsg(showError) {
+    const input = $("#promo-input");
+    const msg = $("#promo-msg");
+    if (!input || !msg) return;
+    const typed = normCode(input.value);
+    const p = findPromo(input.value);
+    msg.classList.toggle("ok", !!p);
+    msg.classList.toggle("err", !p && !!typed && showError);
+    if (p) {
+      const d = promoDiscount(p);
+      msg.textContent = `✓ 지인 할인 적용: ${won(p.perBox)} × ${boxCount()}상자 = −${won(d)} → ${won(itemTotal() - d)}`;
+    } else {
+      msg.textContent = typed && showError ? "할인 코드가 맞지 않아요. 다시 확인해 주세요." : "";
+    }
+  }
+
   function buildSummary(form, opts = {}) {
     const f = new FormData(form);
     const method = f.get("method");
+    const promo = findPromo(f.get("promo"));
+    const disc = promoDiscount(promo);
     return [
       `안녕하세요. ${FARM.name} 홈페이지 보고 주문합니다.`,
       opts.repeat ? `전에도 주문했었어요.` : null,
       ``,
       ...cart.map(smsItemLine),
-      cart.length > 1 ? `합계 ${won(itemTotal())}` : null,
+      disc
+        ? `상품 합계 ${won(itemTotal())}`
+        : cart.length > 1 ? `합계 ${won(itemTotal())}` : null,
+      disc ? `지인 할인 (코드 ${normCode(promo.code)}) ${won(promo.perBox)} × ${boxCount()}상자 -${won(disc)}` : null,
+      disc ? `할인 후 합계 ${won(itemTotal() - disc)}` : null,
       ``,
       `받는 분: ${f.get("name")}`,
       `연락처: ${fmtPhone(f.get("phone"))}`,
@@ -817,6 +849,12 @@
     if (method === "택배" && !(fd.get("address") || "").trim()) {
       toast("주소 찾기로 주소를 입력해 주세요");
       $("#addr-find").focus();
+      return;
+    }
+    if (normCode(fd.get("promo")) && !findPromo(fd.get("promo"))) {
+      renderPromoMsg(true);
+      toast("할인 코드가 맞지 않아요. 지우거나 다시 입력해 주세요");
+      $("#promo-input").focus();
       return;
     }
     const submitBtn = form.querySelector('[type="submit"]');
@@ -862,6 +900,9 @@
       } catch { /* 실패해도 아래 수동 전송으로 안내 */ }
     }
     showDone(summary);
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "문자 내용 확인 →"; }
+    $("#promo-input").value = "";
+    renderPromoMsg(false);
   }
 
   function showDone(summary) {
@@ -1237,6 +1278,14 @@
     $("#back-cart").addEventListener("click", () => showView("method"));
     $("#new-order").addEventListener("click", () => { showView("cart"); closeDrawer(); });
     $("#checkout-view").addEventListener("submit", submitOrder);
+
+    // 지인 할인 코드
+    if (!(CONFIG.friendCodes || []).length) $("#promo-field").hidden = true;
+    $("#promo-apply").addEventListener("click", () => renderPromoMsg(true));
+    $("#promo-input").addEventListener("input", () => renderPromoMsg(false));
+    $("#promo-input").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); $("#promo-apply").click(); }
+    });
 
     // 주소 찾기 (카카오 우편번호 서비스)
     $("#addr-find").addEventListener("click", openPostcode);
