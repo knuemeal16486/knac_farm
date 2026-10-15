@@ -106,7 +106,7 @@
       const parts = [
         `상호 ${b.name}`,
         `대표 ${b.owner}`,
-        `사업자등록번호 ${b.regNo}`,
+        b.regNo ? `사업자등록번호 ${b.regNo}` : null,
         b.mailOrderNo ? `통신판매업 ${b.mailOrderNo}` : null,
         FARM.address,
         FARM.phone,
@@ -237,7 +237,7 @@
         <div id="opt-groups"></div>
         ${CONFIG.saleOpen ? `
         <div class="pdp-buy">
-          <div class="pdp-price"><span class="pdp-price-label">가격 (배송비 별도)</span><span class="price-was" id="pdp-price-was"></span><span id="pdp-price"></span></div>
+          <div class="pdp-price"><span class="pdp-price-label">가격 (배송비 포함)</span><span class="price-was" id="pdp-price-was"></span><span id="pdp-price"></span></div>
           <div class="pdp-qty" role="group" aria-label="수량(상자)">
             <button type="button" data-pq="-1" aria-label="수량 줄이기">−</button>
             <span id="pdp-qty">1</span>
