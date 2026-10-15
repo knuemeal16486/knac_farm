@@ -54,12 +54,13 @@ const PRODUCT = {
 
 const OPTIONS = {
   weight: [
-    // price=판매가, listPrice=할인 전 가격(취소선으로 표시). listPrice 지우면 할인 표시 없이 판매가만 나옴.
-    { id: "2kg", label: "2kg", price: 18000, listPrice: 20000, bunches: ["2수", "3수"] },
-    { id: "4kg", label: "4kg", price: 32000, listPrice: 35000, bunches: ["4수", "5수", "6수"] },
+    // price=판매가(택배비 포함), listPrice=할인 전 가격(취소선으로 표시). listPrice 없으면 판매가만 나옴.
+    // 2026-10-15 택배비 포함 1만6천원/3만원으로 통일(할인 표시 없음).
+    { id: "2kg", label: "2kg", price: 16000, bunches: ["2수", "3수"] },
+    { id: "4kg", label: "4kg", price: 30000, bunches: ["4수", "5수", "6수"] },
   ],
   box: [
-    { id: "normal",   label: "일반상자", add: 0 },
+    // 일반상자는 2026-10-15 뺐다(대량 주문 직접 수령 때만 — CONFIG.bulkNotice).
     { id: "delivery", label: "택배상자", add: 0 },     // 추가금 있으면 add 값 수정
   ],
   wrap: [
@@ -149,6 +150,10 @@ const CONFIG = {
   // 2026-10-15 할인 코드 운영을 끝냈다. 다시 쓰려면 아래 형식으로 넣는다:
   //   { code: "EXAMPLE2026", perBox: 2000 },   // 추천인 메모
   friendCodes: [],
+
+  // 대량 주문 안내 — 가격·담기 버튼 바로 아래에 늘 보인다(전화 문의 링크와 함께).
+  bulkNotice:
+    "대량 주문의 경우(4kg 15박스 / 2kg 30박스) 일반박스 포장에 직접 전달/수령 기준으로 박스당 4천원씩 할인 가능하므로 전화로 사전 문의 부탁드리겠습니다.",
 
   // 배송비 안내 문구 — 가격은 배송비 포함
   shipping: "배송비 포함 가격입니다 (상주→전국 1~2일 소요)",

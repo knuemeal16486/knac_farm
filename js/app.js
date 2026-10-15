@@ -14,8 +14,6 @@
   /* 문자(SMS) 양식 자동완성 */
   const smsHref = (body) => `sms:${digits(FARM.phone)}?&body=${encodeURIComponent(body)}`;
   const inquiryBody = () => `[${FARM.name} 문의]\n성함: \n연락처: \n문의 내용: `;
-  const bulkBody = () =>
-    `[${FARM.name} 대량주문 문의]\n성함: \n연락처: \n희망 구성/수량(상자): \n받는 주소: \n요청사항: `;
 
   /* 장바구니 영속화 (localStorage 불가 환경에서도 동작) */
   const store = {
@@ -33,6 +31,39 @@
   // 구버전(상품ID 기반) 장바구니 데이터는 옵션형과 호환되지 않으므로 정리
   if (!Array.isArray(cart)) cart = [];
   cart = cart.filter((c) => c && typeof c.key === "string" && typeof c.price === "number" && c.opt);
+
+  /* 저장해 둔 줄(이번 방문의 장바구니·"지난번 주문")을 지금 옵션·가격으로 맞춘다.
+     가격이 바뀌었거나(2026-10-15 택배비 포함 1만6천/3만원) 없어진 옵션(일반상자)이
+     예전 값 그대로 다시 담기면 안 된다. 없어진 상자는 지금 상자로 바꾸고,
+     무게·송이가 없어졌거나 팔지 않는 상품이면 뺀다(null). */
+  function repriceLine(c) {
+    if (!c || typeof c.key !== "string") return null;
+    if (c.key.startsWith("juice|")) {
+      if (typeof JUICE === "undefined" || !JUICE || !JUICE.sell || JUICE.soldout) return null;
+      return { ...c, name: JUICE.name, price: JUICE.price };
+    }
+    const [wid, bunch, boxId, wrapId] = c.key.split("|");
+    const w = OPTIONS.weight.find((x) => x.id === wid);
+    if (!w || !w.bunches.includes(bunch)) return null;
+    const box = OPTIONS.box.find((x) => x.id === boxId) || OPTIONS.box[0];
+    const wrap = OPTIONS.wrap.find((x) => x.id === wrapId) || OPTIONS.wrap[0];
+    return {
+      ...c,
+      key: [w.id, bunch, box.id, wrap.id].join("|"),
+      name: PRODUCT.name,
+      opt: { weight: w.label, bunch, box: box.label, wrap: wrap.label },
+      price: w.price + box.add + wrap.add,
+    };
+  }
+  const repriceLines = (lines) => {
+    const out = [];
+    for (const l of lines.map(repriceLine).filter(Boolean)) {
+      const same = out.find((o) => o.key === l.key);
+      same ? (same.qty += l.qty) : out.push(l);
+    }
+    return out;
+  };
+  cart = repriceLines(cart);
 
   /* ---------- 1. 콘텐츠 바인딩 ---------- */
   const ICONS = {
@@ -248,7 +279,7 @@
         <button class="btn btn-primary full" id="pdp-add" ${PRODUCT.soldout ? "disabled" : ""}>
           ${PRODUCT.soldout ? "품절" : "이 옵션 장바구니에 담기"}
         </button>
-        <p class="bulk-link"><a href="${smsHref(bulkBody())}">10상자 이상 대량주문은 별도 문의 →</a></p>
+        ${CONFIG.bulkNotice ? `<div class="bulk-note on">${CONFIG.bulkNotice} <a href="tel:${digits(FARM.phone)}">전화 문의 ${FARM.phone} →</a></div>` : ""}
         ${juiceAddonHTML()}
         <div class="pdp-selected" id="pdp-selected"></div>` : `
         <div class="preharvest">
@@ -289,14 +320,12 @@
         <div class="sel-line">${won(c.price * c.qty)}<button class="sel-rm" data-rm="${c.key}" aria-label="삭제">✕</button></div>
       </div>`).join("");
     const boxes = itemCount();
-    const bulk = boxes >= 10
-      ? `<div class="bulk-note on">10상자 이상 대량주문은 전화·문자로 문의하시면 더 좋은 조건으로 도와드려요. <a href="${smsHref(bulkBody())}">대량주문 문의 →</a></div>`
-      : "";
+    // 대량 주문 안내는 담기 버튼 아래(CONFIG.bulkNotice)에 늘 있다. 예전의
+    // "10상자 이상" 안내는 기준(4kg 15박스 / 2kg 30박스)이 달라 뺐다.
     box.innerHTML = `
       <div class="sel-head">선택한 옵션 <span>${boxes}상자</span></div>
       ${rows}
       <div class="sel-total"><span>합계</span><strong>${won(itemTotal())}</strong></div>
-      ${bulk}
       <button class="btn btn-primary full" id="pdp-order">주문서 작성하기</button>`;
   }
 
@@ -568,8 +597,9 @@
     if (hint) {
       if (!has) {
         try {
-          const last = JSON.parse(localStorage.getItem("knac_last_order") || "null");
-          if (last && Array.isArray(last) && last.length) {
+          const raw = JSON.parse(localStorage.getItem("knac_last_order") || "null");
+          const last = Array.isArray(raw) ? repriceLines(raw) : null;
+          if (last && last.length) {
             const chips = last.map((c) => `<span class="loh-chip">${c.name} · ${optText(c.opt)}</span>`).join("");
             hint.innerHTML = `<p class="loh-title">지난번 주문</p><div class="loh-items">${chips}</div><button class="btn btn-ghost loh-readd" data-readd="1">다시 담기 →</button>`;
             hint.hidden = false;
@@ -1236,8 +1266,9 @@
       else if (t.dataset.rm) removeItem(t.dataset.rm);
       else if (t.dataset.readd) {
         try {
-          const last = JSON.parse(localStorage.getItem("knac_last_order") || "null");
-          if (last && Array.isArray(last) && last.length) { last.forEach((c) => addLine({ ...c })); toast("지난번 주문을 다시 담았습니다"); }
+          const raw = JSON.parse(localStorage.getItem("knac_last_order") || "null");
+          const last = Array.isArray(raw) ? repriceLines(raw) : [];
+          if (last.length) { last.forEach((c) => addLine({ ...c })); toast("지난번 주문을 지금 가격으로 다시 담았습니다"); }
         } catch {}
       }
     });
