@@ -41,7 +41,7 @@ const FARMER = {
      weight : 무게. price=판매가(원), listPrice=할인 전 가격(선택), bunches=고를 수 있는 송이수
      box    : 상자 종류. add=추가금(원)
      wrap   : 포장 방식. add=추가금(원)
-   최종가격 = 선택한 무게 price + 상자 add + 포장 add
+   최종가격 = 선택한 무게 price + 송이수 bunchAdd + 상자 add + 포장 add
 */
 const PRODUCT = {
   name: "샤인머스켓",
@@ -56,8 +56,9 @@ const OPTIONS = {
   weight: [
     // price=판매가(택배비 포함), listPrice=할인 전 가격(취소선으로 표시). listPrice 없으면 판매가만 나옴.
     // 2026-10-15 택배비 포함 1만6천원/3만원으로 통일(할인 표시 없음).
-    { id: "2kg", label: "2kg", price: 16000, bunches: ["2수", "3수"] },
-    { id: "4kg", label: "4kg", price: 30000, bunches: ["4수", "5수", "6수"] },
+    // bunchAdd=송이수별 추가금(원). 큰 송이만 쓰는 2수·4수는 물량이 적어 +3,000원.
+    { id: "2kg", label: "2kg", price: 16000, bunches: ["2수", "3수"], bunchAdd: { "2수": 3000 } },
+    { id: "4kg", label: "4kg", price: 30000, bunches: ["4수", "5수", "6수"], bunchAdd: { "4수": 3000 } },
   ],
   box: [
     // 일반상자는 2026-10-15 뺐다(대량 주문 직접 수령 때만 — CONFIG.bulkNotice).

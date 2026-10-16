@@ -8,6 +8,10 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const won = (n) => n.toLocaleString("ko-KR") + "원";
+  // 송이수별 추가금 (OPTIONS.weight[].bunchAdd)
+  const bunchAddOf = (w, bunch) => (w && w.bunchAdd && w.bunchAdd[bunch]) || 0;
+  // 추가금 없는 첫 송이수를 기본 선택 → 무게 버튼에 적힌 가격과 일치
+  const defaultBunchIdx = (w) => Math.max(0, w.bunches.findIndex((b) => !bunchAddOf(w, b)));
   const digits = (s) => (s || "").replace(/[^0-9]/g, "");
   const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -52,7 +56,7 @@
       key: [w.id, bunch, box.id, wrap.id].join("|"),
       name: PRODUCT.name,
       opt: { weight: w.label, bunch, box: box.label, wrap: wrap.label },
-      price: w.price + box.add + wrap.add,
+      price: w.price + bunchAddOf(w, bunch) + box.add + wrap.add,
     };
   }
   const repriceLines = (lines) => {
@@ -160,7 +164,7 @@
           "@type": "AggregateOffer",
           priceCurrency: "KRW",
           lowPrice: Math.min(...OPTIONS.weight.map((w) => w.price)),
-          highPrice: Math.max(...OPTIONS.weight.map((w) => w.price)),
+          highPrice: Math.max(...OPTIONS.weight.map((w) => w.price + Math.max(0, ...w.bunches.map((b) => bunchAddOf(w, b))))),
           availability: PRODUCT.soldout ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
         },
       },
@@ -236,17 +240,18 @@
   </g></svg>`;
 
   /* ---------- 2. 제품 (옵션 선택형) ---------- */
-  let sel = { weightIdx: 0, bunchIdx: 0, boxIdx: 0, wrapIdx: 0 };
+  let sel = { weightIdx: 0, bunchIdx: defaultBunchIdx(OPTIONS.weight[0]), boxIdx: 0, wrapIdx: 0 };
   let pdpQty = 1;
   let juiceQty = 1;
   let addCartLocked = false;
 
   const curWeight = () => OPTIONS.weight[sel.weightIdx];
+  const curBunchAdd = () => bunchAddOf(curWeight(), curWeight().bunches[sel.bunchIdx]);
   const unitPrice = () =>
-    curWeight().price + OPTIONS.box[sel.boxIdx].add + OPTIONS.wrap[sel.wrapIdx].add;
+    curWeight().price + curBunchAdd() + OPTIONS.box[sel.boxIdx].add + OPTIONS.wrap[sel.wrapIdx].add;
   const listUnitPrice = () => {
     const lp = curWeight().listPrice;
-    return lp > curWeight().price ? lp + OPTIONS.box[sel.boxIdx].add + OPTIONS.wrap[sel.wrapIdx].add : null;
+    return lp > curWeight().price ? lp + curBunchAdd() + OPTIONS.box[sel.boxIdx].add + OPTIONS.wrap[sel.wrapIdx].add : null;
   };
   const offPct = (price, list) => Math.round((1 - price / list) * 100);
 
@@ -343,13 +348,16 @@
       optGroup("무게", "weight", OPTIONS.weight.map((w) =>
         CONFIG.saleOpen ? `${w.label}<small class="opt-pill-price">${won(w.price)}</small>` : w.label
       ), sel.weightIdx) +
-      optGroup("송이 수", "bunch", curWeight().bunches, sel.bunchIdx) +
+      optGroup("송이 수", "bunch", curWeight().bunches.map((b) => {
+        const add = bunchAddOf(curWeight(), b);
+        return add && CONFIG.saleOpen ? `${b}<small class="opt-pill-price">+${won(add)}</small>` : b;
+      }), sel.bunchIdx) +
       optGroup("상자", "box", OPTIONS.box.map((b) => b.label), sel.boxIdx) +
       optGroup("포장", "wrap", OPTIONS.wrap.map((w) => w.label), sel.wrapIdx);
   }
 
   function selectOption(grp, i) {
-    if (grp === "weight") { sel.weightIdx = i; sel.bunchIdx = 0; }
+    if (grp === "weight") { sel.weightIdx = i; sel.bunchIdx = defaultBunchIdx(OPTIONS.weight[i]); }
     else if (grp === "bunch") sel.bunchIdx = i;
     else if (grp === "box") sel.boxIdx = i;
     else if (grp === "wrap") sel.wrapIdx = i;
