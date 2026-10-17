@@ -1179,3 +1179,18 @@ body::after{
   .packing-grid{grid-template-columns:repeat(4,1fr);gap:.4rem}
   .packing-grid img{border-radius:10px}
 }
+
+/* 모바일 스크롤 줄이기: 긴 카드 묶음은 옆으로 넘겨 보기 + 하단 '주문하러 가기' 바 */
+.swipe-hint{display:none;text-align:center;font-size:.8rem;font-weight:700;color:var(--sage-d);margin-top:.3rem}
+.floating-order{text-decoration:none}
+.floating-order[hidden]{display:none}
+@media(max-width:819px){
+  .guide-inner,.values-grid{
+    display:flex;align-items:flex-start;gap:.75rem;
+    overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+    margin-inline:-1.1rem;padding:.2rem 1.1rem .8rem;scroll-padding-inline:1.1rem;
+  }
+  .guide-inner::-webkit-scrollbar,.values-grid::-webkit-scrollbar{display:none}
+  .guide-card,.value-card{flex:0 0 86%;scroll-snap-align:center}
+  .swipe-hint{display:block}
+}

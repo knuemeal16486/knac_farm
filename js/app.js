@@ -644,6 +644,27 @@
     fc.hidden = n === 0;
     $("#floating-count").textContent = n + "개";
     $("#floating-total").textContent = won(itemTotal());
+    updateOrderBar();
+  }
+
+  // 모바일: 장바구니가 비어 있고 주문 영역이 화면에 없으면 하단에 '주문하러 가기' 바
+  let productsInView = false;
+  function updateOrderBar() {
+    const bar = $("#floating-order");
+    if (!bar) return;
+    bar.hidden = itemCount() > 0 || productsInView || window.scrollY < window.innerHeight * 0.6;
+  }
+  function setupOrderBar() {
+    const prod = $("#products");
+    if (!prod || !$("#floating-order")) return;
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((es) => {
+        productsInView = es[0].isIntersecting;
+        updateOrderBar();
+      }, { rootMargin: "0px 0px -30% 0px" }).observe(prod);
+    }
+    addEventListener("scroll", updateOrderBar, { passive: true });
+    updateOrderBar();
   }
 
   /* ---------- 4. 드로어 ---------- */
@@ -1384,6 +1405,7 @@
   setupToTop();
   setupLightbox();
   initColorSlider();
+  setupOrderBar();
   window.addEventListener("pageshow", (e) => {
     if (!e.persisted) return;
     $$(".stat-num[data-to]").forEach(animateCount);

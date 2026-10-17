@@ -150,6 +150,7 @@
       <p class="section-desc">깨끗한 환경에서, 정직하게 키웁니다.</p>
     </div>
     <div class="values-grid" id="values-grid"><!-- JS 렌더링 --></div>
+    <p class="swipe-hint" aria-hidden="true">← 옆으로 넘겨 보세요 →</p>
   </section>
 
   <!-- ===== 구매 가이드 ===== -->
@@ -266,6 +267,7 @@
       </div>
 
     </div>
+    <p class="swipe-hint" aria-hidden="true">← 옆으로 넘겨 보세요 →</p>
   </section>
 
   <!-- ===== 제품 (옵션 선택) ===== -->
@@ -462,6 +464,12 @@
 
     </div>
   </aside>
+
+  <!-- 모바일 하단 고정 '주문하기' 바 (장바구니가 비어 있고 주문 영역이 안 보일 때) -->
+  <a class="floating-cart floating-order" id="floating-order" href="#products" hidden>
+    <span>샤인머스켓 주문</span>
+    <span class="floating-cta">주문하러 가기 ↓</span>
+  </a>
 
   <!-- 모바일 하단 고정 장바구니 바 -->
   <button class="floating-cart" id="floating-cart" hidden>
