@@ -57,8 +57,11 @@ const OPTIONS = {
     // price=판매가(택배비 포함), listPrice=할인 전 가격(취소선으로 표시). listPrice 없으면 판매가만 나옴.
     // 2026-10-15 택배비 포함 1만6천원/3만원으로 통일(할인 표시 없음).
     // bunchAdd=송이수별 추가금(원). 큰 송이만 쓰는 2수·4수는 물량이 적어 +3,000원.
-    { id: "2kg", label: "2kg", price: 16000, bunches: ["2수", "3수"], bunchAdd: { "2수": 3000 } },
-    { id: "4kg", label: "4kg", price: 30000, bunches: ["4수", "5수", "6수"], bunchAdd: { "4수": 3000 } },
+    // bunchImages=송이수별 상자 예시 사진. 고른 송이수에 맞춰 상품 사진이 바뀜 (없으면 PRODUCT.image).
+    { id: "2kg", label: "2kg", price: 16000, bunches: ["2수", "3수"], bunchAdd: { "2수": 3000 },
+      bunchImages: { "2수": "assets/box-2kg-2.jpg", "3수": "assets/box-2kg-3.jpg" } },
+    { id: "4kg", label: "4kg", price: 30000, bunches: ["4수", "5수", "6수"], bunchAdd: { "4수": 3000 },
+      bunchImages: { "4수": "assets/box-4kg-4.jpg", "5수": "assets/box-4kg-5.jpg", "6수": "assets/box-4kg-6.jpg" } },
   ],
   box: [
     // 일반상자는 2026-10-15 뺐다(대량 주문 직접 수령 때만 — CONFIG.bulkNotice).

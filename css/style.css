@@ -442,7 +442,7 @@ section{scroll-margin-top:64px}
 @media(max-width:599px){.order-notices{padding:1rem 1.05rem;margin-top:1.8rem}}
 @media(min-width:820px){.pdp{grid-template-columns:1fr 1.05fr;align-items:start;gap:3.2rem}}
 .pdp-media .card-img{border-radius:var(--rad);overflow:hidden;border:1px solid var(--line)}
-.pdp-opt-badge{position:absolute;bottom:.7rem;left:.7rem;background:rgba(43,51,32,.72);color:#fff;font-size:.78rem;font-weight:700;padding:.3em .75em;border-radius:999px;backdrop-filter:blur(4px);transition:opacity .2s;pointer-events:none}
+.pdp-opt-badge{position:absolute;bottom:.7rem;left:.7rem;background:rgba(43,51,32,.72);color:#fff;font-size:.78rem;font-weight:700;padding:.3em .75em;border-radius:999px;backdrop-filter:blur(4px);transition:opacity .2s;pointer-events:none;z-index:2}
 .pdp-name{font-family:var(--serif);font-size:clamp(1.7rem,4vw,2.3rem);line-height:1.25}
 .pdp-brix{color:var(--sage-d);font-weight:700;font-size:.9rem;margin-top:.35rem}
 .pdp-desc{color:var(--ink-soft);margin:.7rem 0 1.6rem;line-height:1.7}
