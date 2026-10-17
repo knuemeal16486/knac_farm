@@ -140,15 +140,22 @@
     const b = CONFIG.business;
     if (b) {
       const parts = [
-        `상호 ${b.name}`,
+        b.name,
         `대표 ${b.owner}`,
         b.regNo ? `사업자등록번호 ${b.regNo}` : null,
         b.mailOrderNo ? `통신판매업 ${b.mailOrderNo}` : null,
         FARM.address,
-        FARM.phone,
+        `연락처 ${FARM.phone}`,
         b.type,
       ].filter(Boolean);
-      $("#biz-info").textContent = parts.join("  ·  ");
+      // 항목 단위로만 줄바꿈되게 (주소 끝 번지만 다음 줄로 내려가지 않도록)
+      const info = $("#biz-info");
+      info.textContent = "";
+      parts.forEach((t, i) => {
+        const s = document.createElement("span");
+        s.textContent = i < parts.length - 1 ? t + "\u00a0\u00a0·" : t;
+        info.append(s, " ");
+      });
     }
 
     const ld = document.createElement("script");
