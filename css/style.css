@@ -903,7 +903,14 @@ html{scrollbar-width:thin}
   transform:translate(-50%,-50%);
   pointer-events:none;transition:border-color .1s;
 }
-.cmp-thumb:not(.cmp-thumb--touched){animation:thumbWiggle 1.1s ease 2s 2}
+/* 아직 안 만져본 손잡이: 빛나는 링이 계속 깜빡이고, 카드가 보이면 좌우로 흔들림 */
+@keyframes thumbGlow{
+  0%{box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 0 rgba(255,255,255,.95),0 0 0 0 rgba(74,94,40,.45)}
+  70%{box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 10px rgba(255,255,255,0),0 0 0 16px rgba(74,94,40,0)}
+  100%{box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 0 rgba(255,255,255,0),0 0 0 0 rgba(74,94,40,0)}
+}
+.cmp-thumb:not(.cmp-thumb--touched){width:26px;height:26px;animation:thumbGlow 1.3s ease-out infinite}
+.guide-card.in .cmp-thumb:not(.cmp-thumb--touched){animation:thumbGlow 1.3s ease-out infinite,thumbWiggle 1.1s ease .8s 2}
 .cmp-range{
   position:absolute;inset:0;width:100%;height:100%;
   opacity:0;cursor:pointer;margin:0;
@@ -924,13 +931,13 @@ html{scrollbar-width:thin}
   margin-top:.3rem;padding:0 .15rem;
   font-size:.64rem;color:var(--ink-soft);opacity:.75;
 }
-/* 슬라이더 첫 진입 힌트 (3초 후 페이드아웃, 첫 조작 시 JS가 제거) */
+/* 슬라이더 힌트 (깜빡이며 유지, 첫 조작 시 JS가 제거) */
 .cmp-hint{
   display:block;text-align:center;
-  font-size:.68rem;color:var(--sage-d);margin-top:.35rem;
-  animation:fadeHint 3s ease .5s forwards;
+  font-size:.8rem;font-weight:700;color:var(--sage-d);margin-top:.4rem;
+  animation:hintBlink 1.3s ease-in-out infinite;
 }
-@keyframes fadeHint{0%,70%{opacity:1}100%{opacity:0}}
+@keyframes hintBlink{0%,100%{opacity:1}50%{opacity:.35}}
 .pt-mark{
   flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:50%;
   background:var(--gold);color:#fff;border:none;

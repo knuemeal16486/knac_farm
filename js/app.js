@@ -1194,8 +1194,6 @@
       $("#cmp-hint")?.remove();
       thumb.classList.add("cmp-thumb--touched");
     }, { once: true });
-    const hint = $("#cmp-hint");
-    hint?.addEventListener("animationend", () => hint.remove(), { once: true });
     update();
   }
 
