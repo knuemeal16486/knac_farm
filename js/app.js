@@ -83,7 +83,7 @@
 
   /* 컨테이너에 이미지를 얹는다. 로드 성공 시에만 표시(페이드인), 실패 시 일러스트 유지.
      zoom=true 면 클릭 시 라이트박스로 확대 가능. */
-  function mountImage(container, src, alt, zoom) {
+  function mountImage(container, src, alt, zoom, onLoad) {
     if (!container || !src) return;
     const img = document.createElement("img");
     img.className = "ph-img";
@@ -94,6 +94,7 @@
       container.querySelectorAll(".photo-placeholder").forEach((n) => n.remove());
       img.classList.add("loaded");
       if (zoom) { img.dataset.zoom = src; img.classList.add("zoomable"); }
+      if (onLoad) onLoad(img);
     });
     img.addEventListener("error", () => img.remove());
     container.appendChild(img);
@@ -297,7 +298,8 @@
           </div>
         </div>`}
       </div>`;
-    mountImage($("#pdp-img"), PRODUCT.image, PRODUCT.name, true);
+    showBunchImage();
+    OPTIONS.weight.forEach((w) => Object.values(w.bunchImages || {}).forEach((src) => { new Image().src = src; }));
     if (juiceOn()) mountImage($("#juice-img"), JUICE.image, JUICE.name, true);
     renderOptions();
     updatePrice();
@@ -364,6 +366,22 @@
     renderOptions();
     updatePrice();
     updateOptionBadge();
+    showBunchImage();
+  }
+
+  // 고른 송이수에 맞는 상자 사진으로 교체 (새 사진이 뜨면 이전 사진 제거)
+  function showBunchImage() {
+    const box = $("#pdp-img");
+    if (!box) return;
+    const w = curWeight();
+    const src = (w.bunchImages && w.bunchImages[w.bunches[sel.bunchIdx]]) || PRODUCT.image;
+    if (box.dataset.src === src) return;
+    box.dataset.src = src;
+    const old = [...box.querySelectorAll(".ph-img")];
+    mountImage(box, src, `${PRODUCT.name} ${w.label} ${w.bunches[sel.bunchIdx]} 상자`, true, (img) => {
+      if (box.dataset.src !== src) { img.remove(); return; }
+      old.forEach((n) => n.remove());
+    });
   }
 
   function updateOptionBadge() {
