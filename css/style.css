@@ -1170,3 +1170,12 @@ body::after{
 .promo-msg:empty{display:none}
 .promo-msg.ok{color:var(--sage-d);font-weight:700}
 .promo-msg.err{color:#c0392b}
+
+/* 모바일 사진: 데스크톱과 같은 비율(농부 4:5 · 상품 1:1 · 포장 4장 한 줄)로, 화면 폭을 꽉 채우지 않게 */
+@media(max-width:819px){
+  .photo-frame{aspect-ratio:4/5;width:72%;max-width:320px;margin-inline:auto}
+  .photo-frame img{object-position:center}
+  .pdp-media .card-img{aspect-ratio:1/1;width:85%;max-width:380px;margin-inline:auto}
+  .packing-grid{grid-template-columns:repeat(4,1fr);gap:.4rem}
+  .packing-grid img{border-radius:10px}
+}
