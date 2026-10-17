@@ -1105,7 +1105,6 @@ body::after{
 .packing-desc small{display:inline-block;margin-top:.35rem;font-size:.85em;opacity:.85}
 .packing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
 .packing-grid img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--rad);border:1px solid var(--line);background:var(--paper-2);cursor:zoom-in}
-.packing-grid img.wide{grid-column:1/-1;aspect-ratio:2/1}
 @media(max-width:699px){.packing-grid{grid-template-columns:repeat(2,1fr);gap:.55rem}}
 .testi-card{
   padding:1.9rem 1.8rem;
