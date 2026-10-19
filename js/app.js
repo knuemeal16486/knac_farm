@@ -689,6 +689,7 @@
   const backdrop = $("#backdrop");
   function openDrawer() {
     showView("cart");
+    void drawer.offsetWidth; // 닫힌 위치를 먼저 확정해야 모바일에서 슬라이드가 빠지지 않음
     drawer.classList.add("open");
     drawer.setAttribute("aria-hidden", "false");
     backdrop.hidden = false;

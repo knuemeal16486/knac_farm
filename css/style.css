@@ -241,7 +241,7 @@ section{scroll-margin-top:64px}
   position:fixed;top:0;bottom:0;right:0;height:100%;height:100dvh;width:min(420px,92vw);z-index:60;background:var(--paper-2);
   box-shadow:-20px 0 50px -20px rgba(43,51,32,.5);transform:translateX(100%);
   transition:transform .28s cubic-bezier(.4,0,.2,1);
-  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  overflow-y:auto;overscroll-behavior:contain;
 }
 .drawer.open{transform:translateX(0)}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:1.3rem 1.4rem;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--paper-2);z-index:3}
@@ -1208,7 +1208,7 @@ body::after{
    - 카드가 투명(opacity 0)에서 시작하는 애니메이션이 멈추면 뿌연 배경만 보임 → 카드는 처음부터 보이게, 크기만 살짝 커지게
    - 화면보다 카드가 크면 위아래가 잘림 → 카드 안에서 스크롤, 낮은 화면은 간격 축소 */
 @keyframes popIn{from{transform:scale(.96)}to{transform:none}}
-.cc-card,.added-card{animation:popIn .2s ease;opacity:1;max-height:calc(100% - .5rem);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.cc-card,.added-card{animation:popIn .2s ease;opacity:1;max-height:calc(100% - .5rem);overflow-y:auto}
 .cc-modal,.added-modal{padding:max(1rem,env(safe-area-inset-top,0px)) 1rem max(1rem,env(safe-area-inset-bottom,0px))}
 @media(max-height:720px){
   .cc-card{padding:1.2rem 1.3rem}
@@ -1218,3 +1218,7 @@ body::after{
   .cc-total{padding:.6rem 0;margin-bottom:.8rem}
   .cc-price{font-size:1.45rem}
 }
+
+/* 터치 기기(휴대폰·태블릿): 화면 전체를 덮는 종이 질감 레이어 끄기
+   — iOS에서 장바구니·팝업이 늦게 그려지는(뿌연 배경만 보이는) 원인. 휴대폰에선 질감이 거의 안 보임 */
+@media(hover:none){body::after{display:none}}
