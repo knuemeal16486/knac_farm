@@ -1200,3 +1200,6 @@ body::after{
 .bank-acc{white-space:pre-line}
 .sent-note{background:rgba(143,166,106,.12);border-left:3px solid var(--sage);border-radius:0 8px 8px 0;padding:.65rem .85rem;margin:.2rem 0 .8rem;font-size:.88rem;line-height:1.6;color:var(--ink)}
 .sent-note strong{color:var(--sage-d)}
+.sms-help{margin-top:.9rem;font-size:.88rem;line-height:1.6;color:var(--ink)}
+.sms-help summary{cursor:pointer;font-weight:700;color:var(--sage-d);padding:.45rem 0;list-style-position:inside}
+.sms-help ol{margin:.3rem 0 0;padding:.75rem .9rem .75rem 2rem;background:var(--cream);border-radius:10px;display:flex;flex-direction:column;gap:.45rem}

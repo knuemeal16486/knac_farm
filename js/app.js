@@ -108,6 +108,7 @@
     $$("[data-farm-brix]").forEach((e) => (e.textContent = FARM.brix));
     $("[data-farm-address]").textContent = FARM.address;
     $("[data-farm-hours]").textContent = FARM.businessHours;
+    $$("[data-farm-phone]").forEach((e) => (e.textContent = FARM.phone));
     const pl = $("[data-farm-phone-link]");
     pl.textContent = FARM.phone;
     pl.href = "tel:" + digits(FARM.phone);
@@ -918,7 +919,9 @@
       f.get("memo") ? `요청사항: ${f.get("memo")}` : null,
       ``,
       `확인 부탁드립니다. 감사합니다.`,
-    ].filter((l) => l !== null).join("\n");
+    ].filter((l) => l !== null).join("\n")
+      // 이모지가 섞이면 장문(LMS)이 멀티미디어(MMS)로 바뀌어 전송 실패가 잦아 제거
+      .replace(/[\p{Extended_Pictographic}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu, "");
   }
 
   async function submitOrder(e) {
