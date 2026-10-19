@@ -455,7 +455,7 @@
     modal.querySelector(".cc-price").textContent = won(total);
     modal.hidden = false;
     document.body.style.overflow = "hidden";
-    modal.querySelector("#cc-confirm").focus();
+    modal.querySelector("#cc-confirm").focus({ preventScroll: true });
   }
 
   function closeCartConfirm() {
