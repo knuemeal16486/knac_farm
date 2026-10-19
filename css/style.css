@@ -1195,3 +1195,6 @@ body::after{
   .swipe-hint{display:block}
 }
 .biz-info span{white-space:nowrap}
+.bank-copy{margin-top:.6rem;padding:.5em 1.1em;font-size:.85rem;min-height:40px}
+.bank-copy[hidden]{display:none}
+.bank-acc{white-space:pre-line}

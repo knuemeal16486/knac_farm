@@ -134,7 +134,16 @@
       mapEl.removeAttribute("aria-hidden");
     }
     $("#ship-note").textContent = CONFIG.shipping;
-    $("#bank-acc").textContent = CONFIG.bankAccount;
+    $("#bank-acc").textContent = (CONFIG.bankAccount || "").replace(" (", "\n(");
+    const accNo = ((CONFIG.bankAccount || "").match(/\d[\d-]{5,}\d/) || [])[0];
+    const copyBtn = $("#bank-copy");
+    if (copyBtn) {
+      copyBtn.hidden = !accNo;
+      copyBtn.addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(accNo); toast("계좌번호가 복사되었습니다"); }
+        catch { toast("복사 실패 — 계좌번호를 길게 눌러 복사하세요"); }
+      });
+    }
     renderNotices();
 
     const b = CONFIG.business;
