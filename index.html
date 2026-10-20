@@ -467,7 +467,7 @@
         <div class="bank-box">
           <p class="bank-label">입금 계좌</p>
           <p class="bank-acc" id="bank-acc"></p>
-          <p class="bank-hint">주문 확인 후 안내드린 금액을 입금해 주세요.</p>
+          <p class="bank-hint">주문 확인 후 안내드린 금액을 입금해 주세요.<br>문자 없이 입금만 하시면 주문 확인이 어렵습니다. 입금자명이 받는 분과 다르면 문자에 적어 주세요.</p>
           <button type="button" class="btn btn-ghost bank-copy" id="bank-copy">계좌번호 복사</button>
         </div>
         <button class="btn btn-ghost full" id="new-order">처음으로</button>
@@ -493,6 +493,19 @@
   <button class="to-top" id="to-top" aria-label="맨 위로" hidden>↑</button>
 
   <!-- 담기 전 옵션 확인 모달 -->
+  <!-- 사이트 팝업 공지 (data.js의 CONFIG.popupNotice) -->
+  <div class="cc-modal notice-modal" id="notice-modal" hidden>
+    <div class="cc-card notice-card" role="dialog" aria-modal="true" aria-labelledby="notice-title">
+      <p class="cc-eyebrow">공지</p>
+      <h4 id="notice-title" class="cc-product-name"></h4>
+      <p class="notice-body" id="notice-body"></p>
+      <div class="cc-actions">
+        <button class="btn btn-ghost" id="notice-today">오늘 하루 보지 않기</button>
+        <button class="btn btn-primary" id="notice-ok">확인</button>
+      </div>
+    </div>
+  </div>
+
   <div class="cc-modal" id="cart-confirm-modal" hidden>
     <div class="cc-card" role="dialog" aria-modal="true" aria-labelledby="cc-title">
       <p class="cc-eyebrow">장바구니에 담기 전 확인해주세요</p>

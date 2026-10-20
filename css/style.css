@@ -1222,3 +1222,9 @@ body::after{
 /* 터치 기기(휴대폰·태블릿): 화면 전체를 덮는 종이 질감 레이어 끄기
    — iOS에서 장바구니·팝업이 늦게 그려지는(뿌연 배경만 보이는) 원인. 휴대폰에선 질감이 거의 안 보임 */
 @media(hover:none){body::after{display:none}}
+
+/* 사이트 팝업 공지 */
+.notice-modal{z-index:90}
+.notice-body{white-space:pre-line;font-size:.95rem;line-height:1.7;color:var(--ink);margin:-.4rem 0 1.4rem}
+.notice-card .cc-actions .btn{padding-inline:.8rem;font-size:.92rem}
+.notice-card h4,.notice-body{word-break:keep-all}

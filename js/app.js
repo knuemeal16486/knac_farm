@@ -1149,6 +1149,38 @@
     }, 620);
   }
 
+  /* 사이트 팝업 공지 — '오늘 하루 보지 않기'는 공지 id + 날짜로 기억 */
+  function setupNotice() {
+    const n = CONFIG.popupNotice;
+    const modal = $("#notice-modal");
+    if (!n || !n.show || !modal) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const key = "knac_notice_hide";
+    try { if (localStorage.getItem(key) === `${n.id}|${today}`) return; } catch {}
+    $("#notice-title").textContent = n.title || "";
+    $("#notice-body").textContent = (n.body || "").replaceAll("{phone}", FARM.phone);
+    const close = () => {
+      modal.hidden = true;
+      if ($("#cart-drawer").classList.contains("open")) return;
+      document.body.style.overflow = "";
+    };
+    $("#notice-ok").addEventListener("click", close);
+    $("#notice-today").addEventListener("click", () => {
+      try { localStorage.setItem(key, `${n.id}|${today}`); } catch {}
+      close();
+    });
+    modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden) close(); });
+    setTimeout(() => {
+      const busy = $("#cart-drawer").classList.contains("open") ||
+        !$("#cart-confirm-modal").hidden || !$("#added-modal").hidden;
+      if (busy) return;
+      modal.hidden = false;
+      document.body.style.overflow = "hidden";
+      $("#notice-ok").focus({ preventScroll: true });
+    }, 1400);
+  }
+
   function setupHeroParallax() {
     if (reduceMotion()) return;
     if (window.matchMedia("(max-width:819px)").matches) return;
@@ -1426,6 +1458,7 @@
   setupLightbox();
   initColorSlider();
   setupOrderBar();
+  setupNotice();
   window.addEventListener("pageshow", (e) => {
     if (!e.persisted) return;
     $$(".stat-num[data-to]").forEach(animateCount);
