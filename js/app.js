@@ -1159,16 +1159,29 @@
     try { if (localStorage.getItem(key) === `${n.id}|${today}`) return; } catch {}
     $("#notice-title").textContent = n.title || "";
     $("#notice-body").textContent = (n.body || "").replaceAll("{phone}", FARM.phone);
+    // 일부 휴대폰 브라우저에서 fixed 위치가 어긋나는 경우가 있어,
+    // 열릴 때 '지금 보이는 화면'의 문서 좌표에 직접 붙인다.
     const vv = window.visualViewport;
     const fit = () => {
-      if (!vv || modal.hidden) return;
-      modal.style.top = `${vv.offsetTop}px`;
-      modal.style.height = `${vv.height}px`;
-      modal.style.bottom = "auto";
+      if (modal.hidden) return;
+      const top = vv ? vv.pageTop : window.scrollY;
+      const left = vv ? vv.pageLeft : window.scrollX;
+      Object.assign(modal.style, {
+        position: "absolute", inset: "auto",
+        top: `${top}px`, left: `${left}px`,
+        width: `${vv ? vv.width : document.documentElement.clientWidth}px`,
+        height: `${vv ? vv.height : window.innerHeight}px`,
+      });
+    };
+    const watch = (on) => {
+      const m = on ? "addEventListener" : "removeEventListener";
+      window[m]("scroll", fit, { passive: true });
+      window[m]("resize", fit);
+      if (vv) { vv[m]("resize", fit); vv[m]("scroll", fit); }
     };
     const close = () => {
       modal.hidden = true;
-      if (vv) { vv.removeEventListener("resize", fit); vv.removeEventListener("scroll", fit); }
+      watch(false);
       if ($("#cart-drawer").classList.contains("open")) return;
       document.body.style.overflow = "";
     };
@@ -1186,7 +1199,7 @@
       modal.hidden = false;
       document.body.style.overflow = "hidden";
       fit();
-      if (vv) { vv.addEventListener("resize", fit); vv.addEventListener("scroll", fit); }
+      watch(true);
       $(".notice-card").scrollTop = 0;
       $("#notice-ok").focus({ preventScroll: true });
     }, 1400);
