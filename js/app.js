@@ -1159,8 +1159,16 @@
     try { if (localStorage.getItem(key) === `${n.id}|${today}`) return; } catch {}
     $("#notice-title").textContent = n.title || "";
     $("#notice-body").textContent = (n.body || "").replaceAll("{phone}", FARM.phone);
+    const vv = window.visualViewport;
+    const fit = () => {
+      if (!vv || modal.hidden) return;
+      modal.style.top = `${vv.offsetTop}px`;
+      modal.style.height = `${vv.height}px`;
+      modal.style.bottom = "auto";
+    };
     const close = () => {
       modal.hidden = true;
+      if (vv) { vv.removeEventListener("resize", fit); vv.removeEventListener("scroll", fit); }
       if ($("#cart-drawer").classList.contains("open")) return;
       document.body.style.overflow = "";
     };
@@ -1177,6 +1185,9 @@
       if (busy) return;
       modal.hidden = false;
       document.body.style.overflow = "hidden";
+      fit();
+      if (vv) { vv.addEventListener("resize", fit); vv.addEventListener("scroll", fit); }
+      $(".notice-card").scrollTop = 0;
       $("#notice-ok").focus({ preventScroll: true });
     }, 1400);
   }
